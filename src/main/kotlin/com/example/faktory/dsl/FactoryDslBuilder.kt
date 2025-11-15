@@ -1,6 +1,9 @@
 package com.example.faktory.dsl
 
+import com.example.faktory.builder.DefaultFactoryBuilder
+import com.example.faktory.builder.FactoryBuilder
 import com.example.faktory.core.AttributeDefinition
+import com.example.faktory.core.CallbackPhase
 import com.example.faktory.core.DefaultCallbackRegistry
 import com.example.faktory.core.DefaultFactoryDefinition
 import com.example.faktory.core.DynamicAttribute
@@ -9,9 +12,15 @@ import com.example.faktory.core.FactoryDefinition
 import com.example.faktory.core.SequenceAttribute
 import com.example.faktory.core.StaticAttribute
 import com.example.faktory.core.TraitDefinition
+import com.example.faktory.core.TransientContext
 import com.example.faktory.core.TransientDefinition
+import com.example.faktory.registry.GlobalFactoryRegistry
+import com.example.faktory.sequence.GlobalSequenceManager
+import org.jooq.DSLContext
 import org.jooq.Record
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 class FactoryDslBuilder<T : Record>(
     private val recordClass: KClass<T>,
@@ -20,7 +29,63 @@ class FactoryDslBuilder<T : Record>(
     private val attributes = mutableMapOf<String, AttributeDefinition<*>>()
     private val traits = mutableMapOf<String, TraitDefinition<T>>()
     private val callbacks = DefaultCallbackRegistry<T>()
-    private val transients = TransientDefinition()
+    private var transients = TransientDefinition()
+
+    var name: String
+        get() = throw UnsupportedOperationException()
+        set(value) {
+            attributes["name"] = StaticAttribute(value)
+        }
+
+    var email: Any
+        get() = throw UnsupportedOperationException()
+        set(value) {
+            when (value) {
+                is String -> attributes["email"] = StaticAttribute(value)
+                is SequenceAttribute<*> -> attributes["email"] = value
+                else -> throw IllegalArgumentException("Unsupported email value type")
+            }
+        }
+
+    var age: Int
+        get() = throw UnsupportedOperationException()
+        set(value) {
+            attributes["age"] = StaticAttribute(value)
+        }
+
+    var title: String
+        get() = throw UnsupportedOperationException()
+        set(value) {
+            attributes["title"] = StaticAttribute(value)
+        }
+
+    var content: String
+        get() = throw UnsupportedOperationException()
+        set(value) {
+            attributes["content"] = StaticAttribute(value)
+        }
+
+    fun <T> sequence(generator: (Int) -> T): SequenceAttribute<T> {
+        return SequenceAttribute(null, generator)
+    }
+
+    fun transient(block: TransientDslBuilder.() -> Unit) {
+        val builder = TransientDslBuilder()
+        builder.block()
+        transients = builder.build()
+    }
+
+    fun afterBuild(callback: (T, TransientContext) -> Unit) {
+        callbacks.register(CallbackPhase.AFTER_BUILD, callback)
+    }
+
+    fun beforeCreate(callback: (T, TransientContext) -> Unit) {
+        callbacks.register(CallbackPhase.BEFORE_CREATE, callback)
+    }
+
+    fun afterCreate(callback: (T, TransientContext) -> Unit) {
+        callbacks.register(CallbackPhase.AFTER_CREATE, callback)
+    }
 
     fun attribute(
         name: String,
@@ -36,7 +101,7 @@ class FactoryDslBuilder<T : Record>(
         attributes[name] = DynamicAttribute(generator)
     }
 
-    fun sequence(
+    fun sequenceAttr(
         name: String,
         generator: (Int) -> Any?,
     ) {
@@ -45,11 +110,17 @@ class FactoryDslBuilder<T : Record>(
 
     fun trait(
         name: String,
-        block: TraitDslBuilder<T>.() -> Unit,
+        block: FactoryDslBuilder<T>.() -> Unit,
     ) {
-        val builder = TraitDslBuilder<T>(name)
+        val builder = FactoryDslBuilder(recordClass)
         builder.block()
-        traits[name] = builder.build()
+        traits[name] =
+            TraitDefinition(
+                name = name,
+                attributes = builder.attributes,
+                callbacks = builder.callbacks,
+                transients = builder.transients,
+            )
     }
 
     fun build(): FactoryDefinition<T> {
@@ -64,27 +135,21 @@ class FactoryDslBuilder<T : Record>(
     }
 }
 
-class TraitDslBuilder<T : Record>(
-    private val traitName: String,
-) {
-    private val attributes = mutableMapOf<String, AttributeDefinition<*>>()
-    private val callbacks = DefaultCallbackRegistry<T>()
+class TransientDslBuilder {
+    private val properties = mutableMapOf<String, Any?>()
 
-    fun attribute(
-        name: String,
+    fun set(
+        key: String,
         value: Any?,
     ) {
-        attributes[name] = StaticAttribute(value)
+        properties[key] = value
     }
 
-    fun build(): TraitDefinition<T> {
-        return TraitDefinition(
-            name = traitName,
-            attributes = attributes,
-            callbacks = callbacks,
-        )
+    fun build(): TransientDefinition {
+        return TransientDefinition(properties)
     }
 }
+
 
 inline fun <reified T : Record> factory(
     name: String? = null,
@@ -92,5 +157,12 @@ inline fun <reified T : Record> factory(
 ): FactoryDefinition<T> {
     val builder = FactoryDslBuilder(T::class, name)
     builder.block()
-    return builder.build()
+    val definition = builder.build()
+    GlobalFactoryRegistry.register(definition)
+    return definition
+}
+
+inline fun <reified T : Record> DSLContext.factory(): FactoryBuilder<T> {
+    val definition = GlobalFactoryRegistry.find(T::class)
+    return DefaultFactoryBuilder(this, definition, GlobalSequenceManager.getInstance())
 }

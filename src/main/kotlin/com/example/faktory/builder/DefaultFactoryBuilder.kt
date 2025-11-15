@@ -54,14 +54,14 @@ class DefaultFactoryBuilder<T : Record>(
         count: Int,
         overrides: Map<String, Any?>,
     ): List<T> {
-        TODO("BuildList not implemented yet")
+        return (1..count).map { build(overrides) }
     }
 
     override fun createList(
         count: Int,
         overrides: Map<String, Any?>,
     ): List<T> {
-        TODO("CreateList not implemented yet")
+        return (1..count).map { create(overrides) }
     }
 
     override fun attributes(overrides: Map<String, Any?>): Map<String, Any?> {

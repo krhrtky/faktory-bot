@@ -123,4 +123,59 @@ class DefaultFactoryBuilderTest : JooqTestBase() {
 
         assertThat(found?.name).isEqualTo("Custom Name")
     }
+
+    @Test
+    fun `buildList creates multiple records without persisting`() {
+        val definition =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Test User"),
+                        "email" to StaticAttribute("test@example.com"),
+                    ),
+            )
+
+        val builder = DefaultFactoryBuilder(dsl, definition)
+        val users = builder.buildList(3)
+
+        assertThat(users).hasSize(3)
+        users.forEach { user ->
+            assertThat(user.name).isEqualTo("Test User")
+            assertThat(user.email).isEqualTo("test@example.com")
+        }
+
+        val count = dsl.selectCount().from(Users.USERS).fetchOne(0, Int::class.java)
+        assertThat(count).isEqualTo(0)
+    }
+
+    @Test
+    fun `createList persists multiple records to database`() {
+        val definition =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Test User"),
+                    ),
+            )
+
+        val builder = DefaultFactoryBuilder(dsl, definition)
+        val users = builder.createList(3, overrides = mapOf("email" to "unique-${System.nanoTime()}@example.com"))
+
+        assertThat(users).hasSize(3)
+
+        val count = dsl.selectCount().from(Users.USERS).fetchOne(0, Int::class.java)
+        assertThat(count).isEqualTo(3)
+
+        users.forEach { user ->
+            val found =
+                dsl.selectFrom(Users.USERS)
+                    .where(Users.USERS.ID.eq(user.id))
+                    .fetchOne()
+
+            assertThat(found).isNotNull
+            assertThat(found?.name).isEqualTo("Test User")
+        }
+    }
 }

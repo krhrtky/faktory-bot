@@ -1,14 +1,18 @@
 package com.example.faktory.builder
 
 import com.example.faktory.core.AttributeDefinition
+import com.example.faktory.core.EvaluationContext
 import com.example.faktory.core.FactoryDefinition
 import com.example.faktory.jooq.JooqTableResolver
+import com.example.faktory.sequence.DefaultSequenceManager
+import com.example.faktory.sequence.SequenceManager
 import org.jooq.DSLContext
 import org.jooq.Record
 
 class DefaultFactoryBuilder<T : Record>(
     private val dsl: DSLContext,
     private val definition: FactoryDefinition<T>,
+    private val sequenceManager: SequenceManager = DefaultSequenceManager(),
 ) : FactoryBuilder<T> {
     override fun build(overrides: Map<String, Any?>): T {
         val table = JooqTableResolver.resolveTable(definition.recordClass)
@@ -75,13 +79,12 @@ class DefaultFactoryBuilder<T : Record>(
         val evaluated = mutableMapOf<String, Any?>()
 
         definitions.forEach { (name, attrDef) ->
-            val value =
-                when (attrDef) {
-                    is com.example.faktory.core.StaticAttribute<*> -> attrDef.value
-                    is com.example.faktory.core.DynamicAttribute<*> -> TODO("Dynamic not implemented")
-                    is com.example.faktory.core.SequenceAttribute<*> -> TODO("Sequence not implemented")
-                    is com.example.faktory.core.AssociationAttribute<*> -> TODO("Association not implemented")
-                }
+            val context =
+                EvaluationContext(
+                    sequenceManager = sequenceManager,
+                    attributeName = name,
+                )
+            val value = attrDef.evaluate(context)
             evaluated[name] = value
         }
 

@@ -35,6 +35,7 @@ data class AssociationAttribute<T : Record>(
     val overrides: Map<String, Any?> = emptyMap(),
 ) : AttributeDefinition<T> {
     override fun evaluate(context: EvaluationContext): T {
-        return context.associationResolver.resolve(this, context)
+        return context.associationResolver?.resolve(this, context)
+            ?: throw IllegalStateException("AssociationResolver not configured in EvaluationContext")
     }
 }

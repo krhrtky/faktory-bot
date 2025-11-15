@@ -4,9 +4,9 @@ import com.example.faktory.sequence.SequenceManager
 
 data class EvaluationContext(
     val sequenceManager: SequenceManager,
-    val associationResolver: AssociationResolver,
-    val transients: TransientContext,
     val attributeName: String,
+    val associationResolver: AssociationResolver? = null,
+    val transients: TransientContext? = null,
     val isCreate: Boolean = false,
     val depth: Int = 0,
 ) {

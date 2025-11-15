@@ -178,4 +178,52 @@ class DefaultFactoryBuilderTest : JooqTestBase() {
             assertThat(found?.name).isEqualTo("Test User")
         }
     }
+
+    @Test
+    fun `build evaluates dynamic attributes`() {
+        var counter = 0
+        val definition =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to
+                            com.example.faktory.core.DynamicAttribute { _ ->
+                                "Dynamic User ${++counter}"
+                            },
+                        "email" to com.example.faktory.core.StaticAttribute("test@example.com"),
+                    ),
+            )
+
+        val builder = DefaultFactoryBuilder(dsl, definition)
+        val user1 = builder.build()
+        val user2 = builder.build()
+
+        assertThat(user1.name).isEqualTo("Dynamic User 1")
+        assertThat(user2.name).isEqualTo("Dynamic User 2")
+    }
+
+    @Test
+    fun `build evaluates sequence attributes`() {
+        val definition =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to com.example.faktory.core.StaticAttribute("User"),
+                        "email" to com.example.faktory.core.SequenceAttribute(null) { n -> "user$n@example.com" },
+                    ),
+            )
+
+        val builder = DefaultFactoryBuilder(dsl, definition)
+        val user1 = builder.build()
+        val user2 = builder.build()
+        val user3 = builder.build()
+
+        assertThat(user1.email).matches("user\\d+@example.com")
+        assertThat(user2.email).matches("user\\d+@example.com")
+        assertThat(user3.email).matches("user\\d+@example.com")
+        assertThat(user1.email).isNotEqualTo(user2.email)
+        assertThat(user2.email).isNotEqualTo(user3.email)
+    }
 }

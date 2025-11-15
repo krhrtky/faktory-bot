@@ -214,4 +214,38 @@ class BasicExample : ExamplesTestBase() {
 
         assertThat(totalUsers).isEqualTo(7) // 2 individuals + 5 bulk
     }
+
+    @Test
+    fun `traits provide type-safe attribute variations`() {
+        factory<UsersRecord> {
+            USERS.NAME set "Regular User"
+            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.AGE set 25
+
+            trait("admin") {
+                USERS.NAME set "Admin User"
+                USERS.AGE set 35
+            }
+
+            trait("premium") {
+                USERS.NAME set "Premium User"
+                USERS.AGE set 30
+            }
+        }
+
+        // Create regular user
+        val regular = dsl.factory<UsersRecord>().create()
+        assertThat(regular.name).isEqualTo("Regular User")
+        assertThat(regular.age).isEqualTo(25)
+
+        // Create admin user with trait
+        val admin = dsl.factory<UsersRecord>().create("admin")
+        assertThat(admin.name).isEqualTo("Admin User")
+        assertThat(admin.age).isEqualTo(35)
+
+        // Create premium user with trait
+        val premium = dsl.factory<UsersRecord>().create("premium")
+        assertThat(premium.name).isEqualTo("Premium User")
+        assertThat(premium.age).isEqualTo(30)
+    }
 }

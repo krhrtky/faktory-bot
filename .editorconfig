@@ -11,6 +11,9 @@ indent_style = space
 indent_size = 4
 max_line_length = 120
 
+[{build/generated-jooq/**}]
+disabled_rules = standard
+
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2

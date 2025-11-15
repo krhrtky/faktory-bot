@@ -24,3 +24,9 @@ class InvalidAttributeException(
 ) : FactoryException(
         "Invalid attribute '$attributeName': $reason",
     )
+
+class TraitNotFoundException(
+    traitName: String,
+) : FactoryException(
+        "Trait '$traitName' not found",
+    )

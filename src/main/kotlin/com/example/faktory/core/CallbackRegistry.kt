@@ -11,23 +11,24 @@ enum class CallbackPhase {
 interface CallbackRegistry<T : Record> {
     fun register(
         phase: CallbackPhase,
-        callback: (T) -> Unit,
+        callback: (T, TransientContext) -> Unit,
     )
 
     fun execute(
         phase: CallbackPhase,
         record: T,
+        transients: TransientContext = TransientContext(),
     )
 
     fun merge(other: CallbackRegistry<T>): CallbackRegistry<T>
 }
 
 class DefaultCallbackRegistry<T : Record> : CallbackRegistry<T> {
-    private val callbacks = mutableMapOf<CallbackPhase, MutableList<(T) -> Unit>>()
+    private val callbacks = mutableMapOf<CallbackPhase, MutableList<(T, TransientContext) -> Unit>>()
 
     override fun register(
         phase: CallbackPhase,
-        callback: (T) -> Unit,
+        callback: (T, TransientContext) -> Unit,
     ) {
         callbacks.computeIfAbsent(phase) { mutableListOf() }.add(callback)
     }
@@ -35,8 +36,9 @@ class DefaultCallbackRegistry<T : Record> : CallbackRegistry<T> {
     override fun execute(
         phase: CallbackPhase,
         record: T,
+        transients: TransientContext,
     ) {
-        callbacks[phase]?.forEach { it(record) }
+        callbacks[phase]?.forEach { it(record, transients) }
     }
 
     override fun merge(other: CallbackRegistry<T>): CallbackRegistry<T> {

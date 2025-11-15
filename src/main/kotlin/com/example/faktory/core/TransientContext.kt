@@ -1,14 +1,21 @@
 package com.example.faktory.core
 
-class TransientContext(
-    private val values: MutableMap<String, Any?> = mutableMapOf(),
+data class TransientContext(
+    private val values: Map<String, Any?> = emptyMap(),
 ) {
-    operator fun get(key: String): Any? = values[key]
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T> get(key: String): T =
+        values[key] as? T
+            ?: throw TransientNotFoundException(key)
 
-    operator fun set(
+    fun getOrNull(key: String): Any? = values[key]
+
+    fun with(
         key: String,
         value: Any?,
-    ) {
-        values[key] = value
-    }
+    ) = TransientContext(values + (key to value))
+
+    fun merge(other: TransientContext) = TransientContext(values + other.values)
 }
+
+class TransientNotFoundException(key: String) : FactoryException("Transient key '$key' not found")

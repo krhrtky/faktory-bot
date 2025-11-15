@@ -1,23 +1,14 @@
 package com.example.faktory.core
 
-class TransientDefinition(
-    private val attributes: MutableMap<String, AttributeDefinition<*>> = mutableMapOf(),
+data class TransientDefinition(
+    val properties: Map<String, Any?> = emptyMap(),
 ) {
-    fun set(
-        name: String,
-        definition: AttributeDefinition<*>,
-    ) {
-        attributes[name] = definition
-    }
+    inline fun <reified T> get(key: String): T? = properties[key] as? T
 
-    fun get(name: String): AttributeDefinition<*>? = attributes[name]
+    fun with(
+        key: String,
+        value: Any?,
+    ) = copy(properties = properties + (key to value))
 
-    fun merge(other: TransientDefinition): TransientDefinition {
-        val merged = TransientDefinition()
-        attributes.forEach { (name, attr) -> merged.set(name, attr) }
-        if (other is TransientDefinition) {
-            other.attributes.forEach { (name, attr) -> merged.set(name, attr) }
-        }
-        return merged
-    }
+    fun merge(other: TransientDefinition) = TransientDefinition(properties = properties + other.properties)
 }

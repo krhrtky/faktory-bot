@@ -12,3 +12,9 @@ build/
 *.log
 *.swp
 *.swo
+
+.claude/
+.serena/
+bin/
+*.db
+mise.toml

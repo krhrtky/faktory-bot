@@ -80,4 +80,22 @@ class SequenceManagerTest {
         assertThat(email).isEqualTo("user1@example.com")
         assertThat(id).isEqualTo(1)
     }
+
+    @Test
+    fun `sequence is thread-safe`() {
+        val threadCount = 100
+        val iterationsPerThread = 100
+
+        val results =
+            (1..threadCount).toList().parallelStream()
+                .flatMap { _ ->
+                    (1..iterationsPerThread).map {
+                        sequenceManager.next("test") { it }
+                    }.stream()
+                }
+                .toList()
+
+        assertThat(results.toSet()).hasSize(threadCount * iterationsPerThread)
+        assertThat(results.toSet()).containsAll((1..threadCount * iterationsPerThread).toList())
+    }
 }

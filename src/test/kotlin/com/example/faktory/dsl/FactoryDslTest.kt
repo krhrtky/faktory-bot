@@ -35,7 +35,7 @@ class FactoryDslTest {
     fun `factory DSL supports sequence attributes`() {
         val definition =
             factory<TestRecord> {
-                sequence("email") { n -> "user$n@example.com" }
+                sequenceAttr("email") { n -> "user$n@example.com" }
             }
 
         assertThat(definition.attributes["email"]).isInstanceOf(SequenceAttribute::class.java)

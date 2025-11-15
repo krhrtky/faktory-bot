@@ -31,39 +31,16 @@ class FactoryDslBuilder<T : Record>(
     private val callbacks = DefaultCallbackRegistry<T>()
     private var transients = TransientDefinition()
 
-    var name: String
-        get() = throw UnsupportedOperationException()
-        set(value) {
-            attributes["name"] = StaticAttribute(value)
+    operator fun set(
+        name: String,
+        value: Any?,
+    ) {
+        when (value) {
+            is SequenceAttribute<*> -> attributes[name] = value
+            is DynamicAttribute<*> -> attributes[name] = value
+            else -> attributes[name] = StaticAttribute(value)
         }
-
-    var email: Any
-        get() = throw UnsupportedOperationException()
-        set(value) {
-            when (value) {
-                is String -> attributes["email"] = StaticAttribute(value)
-                is SequenceAttribute<*> -> attributes["email"] = value
-                else -> throw IllegalArgumentException("Unsupported email value type")
-            }
-        }
-
-    var age: Int
-        get() = throw UnsupportedOperationException()
-        set(value) {
-            attributes["age"] = StaticAttribute(value)
-        }
-
-    var title: String
-        get() = throw UnsupportedOperationException()
-        set(value) {
-            attributes["title"] = StaticAttribute(value)
-        }
-
-    var content: String
-        get() = throw UnsupportedOperationException()
-        set(value) {
-            attributes["content"] = StaticAttribute(value)
-        }
+    }
 
     fun <T> sequence(generator: (Int) -> T): SequenceAttribute<T> {
         return SequenceAttribute(null, generator)

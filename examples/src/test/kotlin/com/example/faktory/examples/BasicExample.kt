@@ -30,9 +30,9 @@ class BasicExample : ExamplesTestBase() {
     fun `define a factory with default attributes`() {
         // Define a factory for UserRecord with default values
         factory<UsersRecord> {
-            name = "John Doe"
-            email = "john@example.com"
-            age = 30
+            this["name"] = "John Doe"
+            this["email"] = "john@example.com"
+            this["age"] = 30
         }
 
         // Build an in-memory record using the factory
@@ -47,9 +47,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `build() creates in-memory record without database persistence`() {
         factory<UsersRecord> {
-            name = "John Doe"
-            email = "john@example.com"
-            age = 30
+            this["name"] = "John Doe"
+            this["email"] = "john@example.com"
+            this["age"] = 30
         }
 
         // build() creates the record but doesn't save to database
@@ -63,9 +63,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `override attributes when building records`() {
         factory<UsersRecord> {
-            name = "John Doe"
-            email = "john@example.com"
-            age = 30
+            this["name"] = "John Doe"
+            this["email"] = "john@example.com"
+            this["age"] = 30
         }
 
         // Override specific attributes using a map
@@ -85,9 +85,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `create() persists record to database`() {
         factory<UsersRecord> {
-            name = "John Doe"
-            email = "john@example.com"
-            age = 30
+            this["name"] = "John Doe"
+            this["email"] = "john@example.com"
+            this["age"] = 30
         }
 
         // create() builds and persists the record
@@ -109,9 +109,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `buildList() creates multiple in-memory records`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         // Create 10 users at once
@@ -128,9 +128,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `createList() persists multiple records efficiently`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         // Create and persist 10 users with batch insert
@@ -150,9 +150,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `attributes() returns evaluated attributes as a map`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
         }
 
         // Get attributes without creating a record
@@ -166,9 +166,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `use attributes() for API request payloads`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
         }
 
         // Generate test data for API requests
@@ -184,9 +184,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `combine factory features in a realistic test scenario`() {
         factory<UsersRecord> {
-            name = "Test User"
-            email = sequence { n -> "test${n}@example.com" }
-            age = 25
+            this["name"] = "Test User"
+            this["email"] = sequence { n -> "test${n}@example.com" }
+            this["age"] = 25
         }
 
         // Create a baseline user

@@ -19,9 +19,9 @@ class TraitExampleTest : JooqTestBase() {
     @Test
     fun `1 - Single trait overrides base attributes`() {
         factory<UsersRecord> {
-            name = "Regular User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "Regular User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             trait("admin") {
                 attribute("name", "Admin User")
@@ -43,9 +43,9 @@ class TraitExampleTest : JooqTestBase() {
     @Test
     fun `2 - Multiple traits can be composed`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
 
             trait("verified") {
                 attribute("email", "verified@example.com")
@@ -66,9 +66,9 @@ class TraitExampleTest : JooqTestBase() {
     @Test
     fun `3 - Trait order matters - later traits override earlier ones`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             trait("young") {
                 attribute("age", 18)
@@ -91,9 +91,9 @@ class TraitExampleTest : JooqTestBase() {
         var callbackExecuted = false
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             trait("withCallback") {
                 afterCreate { _, _ ->
@@ -110,9 +110,9 @@ class TraitExampleTest : JooqTestBase() {
     @Test
     fun `5 - Overrides take precedence over traits`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             trait("senior") {
                 attribute("age", 60)
@@ -129,9 +129,9 @@ class TraitExampleTest : JooqTestBase() {
     @Test
     fun `6 - Flag-based traits for feature toggles`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
 
             trait("verified") {
                 attribute("name", "Verified User")
@@ -154,9 +154,9 @@ class TraitExampleTest : JooqTestBase() {
     @Test
     fun `7 - Traits work with create() and persist to database`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             trait("admin") {
                 attribute("name", "Admin User")
@@ -174,9 +174,9 @@ class TraitExampleTest : JooqTestBase() {
         val executionOrder = mutableListOf<String>()
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterCreate { _, _ ->
                 executionOrder.add("base")

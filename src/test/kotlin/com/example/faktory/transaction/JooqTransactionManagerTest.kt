@@ -23,9 +23,9 @@ class JooqTransactionManagerTest : JooqTestBase() {
         TransactionManager.setInstance(transactionManager)
 
         factory<UsersRecord> {
-            name = "Test User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "Test User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
     }
 

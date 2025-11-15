@@ -23,16 +23,16 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `1 - Custom date sequence generates progressive dates`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
         }
 
         val user = dsl.factory<UsersRecord>().create()
 
         factory<PostsRecord> {
-            title = "Post"
-            content = "Content"
+            this["title"] = "Post"
+            this["content"] = "Content"
             sequenceAttr("userId") { _ -> user.id!! }
 
             sequenceAttr("createdAt") { n ->
@@ -52,8 +52,8 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `2 - Dynamic attribute with context`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
 
             sequenceAttr("age") { n ->
                 20 + (n % 50)
@@ -68,9 +68,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `3 - Performance - createList is faster than multiple creates`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val count = 50
@@ -100,9 +100,9 @@ class AdvancedExampleTest : JooqTestBase() {
         var callbackCount = 0
 
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
 
             transient {
                 set("skipCallbacks", false)
@@ -126,9 +126,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `5 - One-to-many association with afterCreate`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             transient {
                 set("postsCount", 5)
@@ -136,8 +136,8 @@ class AdvancedExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    title = "Post"
-                    content = "Content"
+                    this["title"] = "Post"
+                    this["content"] = "Content"
                     sequenceAttr("userId") { _ -> user.id!! }
                 }
 
@@ -160,9 +160,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `6 - Factory composition for complex scenarios`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         fun createBlogPost(
@@ -174,8 +174,8 @@ class AdvancedExampleTest : JooqTestBase() {
             ))
 
             factory<PostsRecord> {
-                title = "Post"
-                content = "Content"
+                this["title"] = "Post"
+                this["content"] = "Content"
                 sequenceAttr("userId") { _ -> author.id!! }
             }
 
@@ -204,17 +204,17 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `7 - Multi-factory test setup`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val authors = dsl.factory<UsersRecord>().createList(3)
 
         val allPosts = authors.flatMap { author ->
             factory<PostsRecord> {
-                title = "Post"
-                content = "Content"
+                this["title"] = "Post"
+                this["content"] = "Content"
                 sequenceAttr("userId") { _ -> author.id!! }
             }
 
@@ -233,9 +233,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `8 - Lazy association loading`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             transient {
                 set("lazyLoadPosts", true)
@@ -245,8 +245,8 @@ class AdvancedExampleTest : JooqTestBase() {
                 val lazy = transients.getOrNull("lazyLoadPosts") as? Boolean ?: false
                 if (!lazy) {
                     factory<PostsRecord> {
-                        title = "Post"
-                        content = "Content"
+                        this["title"] = "Post"
+                        this["content"] = "Content"
                         sequenceAttr("userId") { _ -> user.id!! }
                     }
                     dsl.factory<PostsRecord>().createList(10)
@@ -263,8 +263,8 @@ class AdvancedExampleTest : JooqTestBase() {
         assertThat(posts).hasSize(0)
 
         factory<PostsRecord> {
-            title = "Post"
-            content = "Content"
+            this["title"] = "Post"
+            this["content"] = "Content"
             sequenceAttr("userId") { _ -> user.id!! }
         }
 
@@ -280,8 +280,8 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `9 - Conditional attribute generation`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
 
             sequenceAttr("age") { n ->
                 if (n % 2 == 0) 30 else 25
@@ -298,8 +298,8 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `10 - Complex test data with multiple factories`() {
         factory<UsersRecord> {
             sequenceAttr("name") { n -> "User $n" }
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val users = dsl.factory<UsersRecord>().createList(3)
@@ -307,7 +307,7 @@ class AdvancedExampleTest : JooqTestBase() {
         users.forEach { user ->
             factory<PostsRecord> {
                 sequenceAttr("title") { n -> "Post $n" }
-                content = "Content"
+                this["content"] = "Content"
                 sequenceAttr("userId") { _ -> user.id!! }
             }
 

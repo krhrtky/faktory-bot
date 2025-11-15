@@ -24,9 +24,9 @@ class CallbackExampleTest : JooqTestBase() {
         var callbackExecuted = false
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterBuild { _, _ ->
                 callbackExecuted = true
@@ -43,9 +43,9 @@ class CallbackExampleTest : JooqTestBase() {
         var buildCount = 0
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterBuild { _, _ ->
                 buildCount++
@@ -63,9 +63,9 @@ class CallbackExampleTest : JooqTestBase() {
         var beforeCreateCalled = false
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             beforeCreate { _, _ ->
                 beforeCreateCalled = true
@@ -82,9 +82,9 @@ class CallbackExampleTest : JooqTestBase() {
     @Test
     fun `4 - beforeCreate can validate before persistence`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             beforeCreate { user, _ ->
                 require(user.email?.contains("@") == true) {
@@ -112,9 +112,9 @@ class CallbackExampleTest : JooqTestBase() {
         var userId: Long? = null
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterCreate { user, _ ->
                 afterCreateCalled = true
@@ -131,14 +131,14 @@ class CallbackExampleTest : JooqTestBase() {
     @Test
     fun `6 - afterCreate can create associations`() {
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterCreate { user, _ ->
                 factory<PostsRecord> {
-                    title = "Post Title"
-                    content = "Post Content"
+                    this["title"] = "Post Title"
+                    this["content"] = "Post Content"
                     sequenceAttr("userId") { _ -> user.id!! }
                 }
 
@@ -160,9 +160,9 @@ class CallbackExampleTest : JooqTestBase() {
         val executionOrder = mutableListOf<String>()
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterBuild { _, _ ->
                 executionOrder.add("afterBuild")
@@ -191,9 +191,9 @@ class CallbackExampleTest : JooqTestBase() {
         val executionOrder = mutableListOf<String>()
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterCreate { _, _ ->
                 executionOrder.add("callback1")
@@ -222,9 +222,9 @@ class CallbackExampleTest : JooqTestBase() {
         var callbackCount = 0
 
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
 
             afterCreate { _, _ ->
                 callbackCount++
@@ -241,9 +241,9 @@ class CallbackExampleTest : JooqTestBase() {
         val executionOrder = mutableListOf<String>()
 
         factory<UsersRecord> {
-            name = "User"
-            email = "user@example.com"
-            age = 25
+            this["name"] = "User"
+            this["email"] = "user@example.com"
+            this["age"] = 25
 
             afterCreate { _, _ ->
                 executionOrder.add("base")

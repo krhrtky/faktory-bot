@@ -19,9 +19,9 @@ class SequenceExampleTest : JooqTestBase() {
     @Test
     fun `1 - Simple sequence generates unique email addresses`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val user1 = dsl.factory<UsersRecord>().build()
@@ -37,7 +37,7 @@ class SequenceExampleTest : JooqTestBase() {
     fun `2 - Multiple sequences maintain independent counters`() {
         factory<UsersRecord> {
             sequenceAttr("name") { n -> "User $n" }
-            email = sequence { n -> "user${n}@example.com" }
+            this["email"] = sequence { n -> "user${n}@example.com" }
             sequenceAttr("age") { n -> 20 + n }
         }
 
@@ -71,9 +71,9 @@ class SequenceExampleTest : JooqTestBase() {
     @Test
     fun `4 - Sequences work with buildList and createList`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val users = dsl.factory<UsersRecord>().buildList(5)
@@ -87,9 +87,9 @@ class SequenceExampleTest : JooqTestBase() {
     @Test
     fun `5 - Sequence reset ensures deterministic values`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val user1 = dsl.factory<UsersRecord>().build()
@@ -104,9 +104,9 @@ class SequenceExampleTest : JooqTestBase() {
     @Test
     fun `6 - Sequence with attribute override`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val user = dsl.factory<UsersRecord>().build(mapOf(
@@ -119,9 +119,9 @@ class SequenceExampleTest : JooqTestBase() {
     @Test
     fun `7 - Sequences ensure uniqueness across many records`() {
         factory<UsersRecord> {
-            name = "User"
-            email = sequence { n -> "user${n}@example.com" }
-            age = 25
+            this["name"] = "User"
+            this["email"] = sequence { n -> "user${n}@example.com" }
+            this["age"] = 25
         }
 
         val users = dsl.factory<UsersRecord>().buildList(100)

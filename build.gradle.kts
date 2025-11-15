@@ -41,6 +41,9 @@ kotlin {
 tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
+    environment("DOCKER_HOST", "unix:///Users/takuya.kurihara/.colima/default/docker.sock")
+    environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/Users/takuya.kurihara/.colima/default/docker.sock")
+    environment("TESTCONTAINERS_RYUK_DISABLED", "true")
 }
 
 ktlint {

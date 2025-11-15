@@ -1,0 +1,15 @@
+# Gradle
+build/
+.gradle/
+bin/
+
+# Generated jOOQ code
+src/main/kotlin/com/example/faktory/examples/jooq/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store

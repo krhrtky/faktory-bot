@@ -4,6 +4,7 @@ import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager
 import com.example.faktory.examples.jooq.tables.Users
+import com.example.faktory.examples.jooq.tables.references.USERS
 import com.example.faktory.examples.jooq.tables.records.UsersRecord
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -30,9 +31,9 @@ class BasicExample : ExamplesTestBase() {
     fun `define a factory with default attributes`() {
         // Define a factory for UserRecord with default values
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            USERS.NAME set "John Doe"
+            USERS.EMAIL set "john@example.com"
+            USERS.AGE set 30
         }
 
         // Build an in-memory record using the factory
@@ -47,9 +48,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `build() creates in-memory record without database persistence`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            USERS.NAME set "John Doe"
+            USERS.EMAIL set "john@example.com"
+            USERS.AGE set 30
         }
 
         // build() creates the record but doesn't save to database
@@ -63,9 +64,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `override attributes when building records`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            USERS.NAME set "John Doe"
+            USERS.EMAIL set "john@example.com"
+            USERS.AGE set 30
         }
 
         // Override specific attributes using a map
@@ -85,9 +86,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `create() persists record to database`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            USERS.NAME set "John Doe"
+            USERS.EMAIL set "john@example.com"
+            USERS.AGE set 30
         }
 
         // create() builds and persists the record
@@ -109,9 +110,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `buildList() creates multiple in-memory records`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            USERS.NAME set "User"
+            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.AGE set 25
         }
 
         // Create 10 users at once
@@ -128,9 +129,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `createList() persists multiple records efficiently`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            USERS.NAME set "User"
+            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.AGE set 25
         }
 
         // Create and persist 10 users with batch insert
@@ -150,9 +151,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `attributes() returns evaluated attributes as a map`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            USERS.NAME set "User"
+            USERS.EMAIL set "user@example.com"
+            USERS.AGE set 25
         }
 
         // Get attributes without creating a record
@@ -166,9 +167,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `use attributes() for API request payloads`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            USERS.NAME set "User"
+            USERS.EMAIL set "user@example.com"
+            USERS.AGE set 25
         }
 
         // Generate test data for API requests
@@ -184,9 +185,9 @@ class BasicExample : ExamplesTestBase() {
     @Test
     fun `combine factory features in a realistic test scenario`() {
         factory<UsersRecord> {
-            this["name"] = "Test User"
-            this["email"] = sequence { n -> "test${n}@example.com" }
-            this["age"] = 25
+            USERS.NAME set "Test User"
+            USERS.EMAIL set sequence { n -> "test${n}@example.com" }
+            USERS.AGE set 25
         }
 
         // Create a baseline user

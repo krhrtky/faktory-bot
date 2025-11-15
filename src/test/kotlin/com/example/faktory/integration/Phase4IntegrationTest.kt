@@ -19,9 +19,9 @@ class Phase4IntegrationTest : JooqTestBase() {
     @Test
     fun `trait overrides base attributes`() {
         factory<UsersRecord> {
-            this["name"] = "Regular User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "Regular User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             trait("admin") {
                 attribute("name", "Admin User")
@@ -39,9 +39,9 @@ class Phase4IntegrationTest : JooqTestBase() {
     @Test
     fun `multiple traits can be applied`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             trait("verified") {
                 attribute("email", "verified@example.com")
@@ -64,9 +64,9 @@ class Phase4IntegrationTest : JooqTestBase() {
         var callbackCalled = false
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             trait("withCallback") {
                 afterCreate { _, _ ->
@@ -83,9 +83,9 @@ class Phase4IntegrationTest : JooqTestBase() {
     @Test
     fun `attributes method returns evaluated attributes`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val attrs1 = dsl.factory<UsersRecord>().attributes()
@@ -102,9 +102,9 @@ class Phase4IntegrationTest : JooqTestBase() {
     @Test
     fun `attributes method with overrides`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
         }
 
         val attrs = dsl.factory<UsersRecord>().attributes(mapOf("name" to "Custom User"))
@@ -117,9 +117,9 @@ class Phase4IntegrationTest : JooqTestBase() {
     @Test
     fun `buildList creates multiple records`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val users = dsl.factory<UsersRecord>().buildList(5)
@@ -132,9 +132,9 @@ class Phase4IntegrationTest : JooqTestBase() {
     @Test
     fun `createList persists multiple records`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val users = dsl.factory<UsersRecord>().createList(3)

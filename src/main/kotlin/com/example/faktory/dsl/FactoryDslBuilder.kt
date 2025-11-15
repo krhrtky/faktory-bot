@@ -18,6 +18,7 @@ import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager
 import org.jooq.DSLContext
 import org.jooq.Record
+import org.jooq.TableField
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -31,18 +32,19 @@ class FactoryDslBuilder<T : Record>(
     private val callbacks = DefaultCallbackRegistry<T>()
     private var transients = TransientDefinition()
 
-    operator fun set(
-        name: String,
-        value: Any?,
-    ) {
-        when (value) {
-            is SequenceAttribute<*> -> attributes[name] = value
-            is DynamicAttribute<*> -> attributes[name] = value
-            else -> attributes[name] = StaticAttribute(value)
-        }
+    infix fun <R : Record, V> TableField<R, V>.set(value: V) {
+        attributes[this.name] = StaticAttribute(value)
     }
 
-    fun <T> sequence(generator: (Int) -> T): SequenceAttribute<T> {
+    infix fun <R : Record, V> TableField<R, V>.set(value: SequenceAttribute<V>) {
+        attributes[this.name] = value
+    }
+
+    infix fun <R : Record, V> TableField<R, V>.set(value: DynamicAttribute<V>) {
+        attributes[this.name] = value
+    }
+
+    fun <V> sequence(generator: (Int) -> V): SequenceAttribute<V> {
         return SequenceAttribute(null, generator)
     }
 

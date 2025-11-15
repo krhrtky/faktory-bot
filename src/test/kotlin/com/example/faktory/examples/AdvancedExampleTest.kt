@@ -23,19 +23,19 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `1 - Custom date sequence generates progressive dates`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
         }
 
         val user = dsl.factory<UsersRecord>().create()
 
         factory<PostsRecord> {
-            this["title"] = "Post"
-            this["content"] = "Content"
-            sequenceAttr("userId") { _ -> user.id!! }
+            attribute("title", "Post")
+            attribute("content", "Content")
+            sequenceAttr("user_id") { _ -> user.id!! }
 
-            sequenceAttr("createdAt") { n ->
+            sequenceAttr("created_at") { n ->
                 LocalDateTime.now().plusDays(n.toLong())
             }
         }
@@ -52,8 +52,8 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `2 - Dynamic attribute with context`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
 
             sequenceAttr("age") { n ->
                 20 + (n % 50)
@@ -68,9 +68,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `3 - Performance - createList is faster than multiple creates`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val count = 50
@@ -100,9 +100,9 @@ class AdvancedExampleTest : JooqTestBase() {
         var callbackCount = 0
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
 
             transient {
                 set("skipCallbacks", false)
@@ -126,9 +126,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `5 - One-to-many association with afterCreate`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 5)
@@ -136,9 +136,9 @@ class AdvancedExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    this["title"] = "Post"
-                    this["content"] = "Content"
-                    sequenceAttr("userId") { _ -> user.id!! }
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> user.id!! }
                 }
 
                 val count = transients.getOrNull("postsCount") as? Int ?: 0
@@ -160,9 +160,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `6 - Factory composition for complex scenarios`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         fun createBlogPost(
@@ -174,9 +174,9 @@ class AdvancedExampleTest : JooqTestBase() {
             ))
 
             factory<PostsRecord> {
-                this["title"] = "Post"
-                this["content"] = "Content"
-                sequenceAttr("userId") { _ -> author.id!! }
+                attribute("title", "Post")
+                attribute("content", "Content")
+                sequenceAttr("user_id") { _ -> author.id!! }
             }
 
             repeat(postsCount) {
@@ -204,18 +204,18 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `7 - Multi-factory test setup`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val authors = dsl.factory<UsersRecord>().createList(3)
 
         val allPosts = authors.flatMap { author ->
             factory<PostsRecord> {
-                this["title"] = "Post"
-                this["content"] = "Content"
-                sequenceAttr("userId") { _ -> author.id!! }
+                attribute("title", "Post")
+                attribute("content", "Content")
+                sequenceAttr("user_id") { _ -> author.id!! }
             }
 
             dsl.factory<PostsRecord>().createList(5)
@@ -233,9 +233,9 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `8 - Lazy association loading`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("lazyLoadPosts", true)
@@ -245,9 +245,9 @@ class AdvancedExampleTest : JooqTestBase() {
                 val lazy = transients.getOrNull("lazyLoadPosts") as? Boolean ?: false
                 if (!lazy) {
                     factory<PostsRecord> {
-                        this["title"] = "Post"
-                        this["content"] = "Content"
-                        sequenceAttr("userId") { _ -> user.id!! }
+                        attribute("title", "Post")
+                        attribute("content", "Content")
+                        sequenceAttr("user_id") { _ -> user.id!! }
                     }
                     dsl.factory<PostsRecord>().createList(10)
                 }
@@ -263,9 +263,9 @@ class AdvancedExampleTest : JooqTestBase() {
         assertThat(posts).hasSize(0)
 
         factory<PostsRecord> {
-            this["title"] = "Post"
-            this["content"] = "Content"
-            sequenceAttr("userId") { _ -> user.id!! }
+            attribute("title", "Post")
+            attribute("content", "Content")
+            sequenceAttr("user_id") { _ -> user.id!! }
         }
 
         dsl.factory<PostsRecord>().createList(5)
@@ -280,8 +280,8 @@ class AdvancedExampleTest : JooqTestBase() {
     @Test
     fun `9 - Conditional attribute generation`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
 
             sequenceAttr("age") { n ->
                 if (n % 2 == 0) 30 else 25
@@ -298,8 +298,8 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `10 - Complex test data with multiple factories`() {
         factory<UsersRecord> {
             sequenceAttr("name") { n -> "User $n" }
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val users = dsl.factory<UsersRecord>().createList(3)
@@ -307,8 +307,8 @@ class AdvancedExampleTest : JooqTestBase() {
         users.forEach { user ->
             factory<PostsRecord> {
                 sequenceAttr("title") { n -> "Post $n" }
-                this["content"] = "Content"
-                sequenceAttr("userId") { _ -> user.id!! }
+                attribute("content", "Content")
+                sequenceAttr("user_id") { _ -> user.id!! }
             }
 
             val postCount = (1..3).random()

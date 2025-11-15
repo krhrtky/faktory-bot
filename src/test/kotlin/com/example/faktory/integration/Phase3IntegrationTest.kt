@@ -23,9 +23,9 @@ class Phase3IntegrationTest : JooqTestBase() {
     @Test
     fun `factory with sequence generates unique values`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val user1 = dsl.factory<UsersRecord>().build()
@@ -41,14 +41,14 @@ class Phase3IntegrationTest : JooqTestBase() {
     @Test
     fun `factory with association builds related records`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 30
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 30)
         }
 
         factory<PostsRecord> {
-            this["title"] = "Post Title"
-            this["content"] = "Post Content"
+            attribute("title", "Post Title")
+            attribute("content", "Post Content")
         }
 
         val post = dsl.factory<PostsRecord>().build()
@@ -62,9 +62,9 @@ class Phase3IntegrationTest : JooqTestBase() {
         var postsCountFromCallback: Int? = null
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 5)
@@ -94,9 +94,9 @@ class Phase3IntegrationTest : JooqTestBase() {
         var metadataFromAfterCreate: String? = null
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("metadata", "test-data")
@@ -132,9 +132,9 @@ class Phase3IntegrationTest : JooqTestBase() {
     @Test
     fun `sequence is reset between tests`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val user = dsl.factory<UsersRecord>().build()

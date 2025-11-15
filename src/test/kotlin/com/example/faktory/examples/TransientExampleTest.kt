@@ -23,9 +23,9 @@ class TransientExampleTest : JooqTestBase() {
         var postsCountFromCallback: Int? = null
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 5)
@@ -45,9 +45,9 @@ class TransientExampleTest : JooqTestBase() {
     @Test
     fun `2 - Transients can be overridden`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 5)
@@ -55,9 +55,9 @@ class TransientExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    this["title"] = "Post"
-                    this["content"] = "Content"
-                    sequenceAttr("userId") { _ -> user.id!! }
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> user.id!! }
                 }
 
                 val count = transients.getOrNull("postsCount") as? Int ?: 0
@@ -77,9 +77,9 @@ class TransientExampleTest : JooqTestBase() {
         GlobalSequenceManager.reset()
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 5)
@@ -87,9 +87,9 @@ class TransientExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    this["title"] = "Post"
-                    this["content"] = "Content"
-                    sequenceAttr("userId") { _ -> user.id!! }
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> user.id!! }
                 }
 
                 val count = transients.getOrNull("postsCount") as? Int ?: 0
@@ -113,9 +113,9 @@ class TransientExampleTest : JooqTestBase() {
         var emailSent = false
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("sendWelcomeEmail", false)
@@ -141,9 +141,9 @@ class TransientExampleTest : JooqTestBase() {
     @Test
     fun `4 - Traits can override transients`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 0)
@@ -163,9 +163,9 @@ class TransientExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    this["title"] = "Post"
-                    this["content"] = "Content"
-                    sequenceAttr("userId") { _ -> user.id!! }
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> user.id!! }
                 }
 
                 val count = transients.getOrNull("postsCount") as? Int ?: 0
@@ -185,9 +185,9 @@ class TransientExampleTest : JooqTestBase() {
         GlobalSequenceManager.reset()
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 0)
@@ -207,9 +207,9 @@ class TransientExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    this["title"] = "Post"
-                    this["content"] = "Content"
-                    sequenceAttr("userId") { _ -> user.id!! }
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> user.id!! }
                 }
 
                 val count = transients.getOrNull("postsCount") as? Int ?: 0
@@ -229,9 +229,9 @@ class TransientExampleTest : JooqTestBase() {
         GlobalSequenceManager.reset()
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 0)
@@ -251,9 +251,9 @@ class TransientExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    this["title"] = "Post"
-                    this["content"] = "Content"
-                    sequenceAttr("userId") { _ -> user.id!! }
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> user.id!! }
                 }
 
                 val count = transients.getOrNull("postsCount") as? Int ?: 0
@@ -277,9 +277,9 @@ class TransientExampleTest : JooqTestBase() {
         var boolValue: Boolean? = null
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("intValue", 42)
@@ -304,9 +304,9 @@ class TransientExampleTest : JooqTestBase() {
     @Test
     fun `6 - Transients provide defaults in callbacks`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("postsCount", 3)
@@ -314,9 +314,9 @@ class TransientExampleTest : JooqTestBase() {
 
             afterCreate { user, transients ->
                 factory<PostsRecord> {
-                    this["title"] = "Post"
-                    this["content"] = "Content"
-                    sequenceAttr("userId") { _ -> user.id!! }
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> user.id!! }
                 }
 
                 val count = transients.getOrNull("postsCount") as? Int ?: 0
@@ -337,9 +337,9 @@ class TransientExampleTest : JooqTestBase() {
     @Test
     fun `7 - Transients are not persisted to database`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("metadata", "test-data")
@@ -357,9 +357,9 @@ class TransientExampleTest : JooqTestBase() {
         val executionLog = mutableListOf<String>()
 
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
 
             transient {
                 set("metadata", "test")

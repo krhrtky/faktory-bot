@@ -20,9 +20,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `1 - Define factory with default attributes`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            attribute("name", "John Doe")
+            attribute("email", "john@example.com")
+            attribute("age", 30)
         }
 
         val user = dsl.factory<UsersRecord>().build()
@@ -35,9 +35,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `2 - build() - Create in-memory record`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            attribute("name", "John Doe")
+            attribute("email", "john@example.com")
+            attribute("age", 30)
         }
 
         val user = dsl.factory<UsersRecord>().build()
@@ -49,9 +49,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `3 - build(overrides) - Create with custom attributes`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            attribute("name", "John Doe")
+            attribute("email", "john@example.com")
+            attribute("age", 30)
         }
 
         val user = dsl.factory<UsersRecord>().build(mapOf(
@@ -67,9 +67,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `4 - create() - Create and persist to database`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            attribute("name", "John Doe")
+            attribute("email", "john@example.com")
+            attribute("age", 30)
         }
 
         val user = dsl.factory<UsersRecord>().create()
@@ -88,9 +88,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `5 - create(overrides) - Create with custom attributes and persist`() {
         factory<UsersRecord> {
-            this["name"] = "John Doe"
-            this["email"] = "john@example.com"
-            this["age"] = 30
+            attribute("name", "John Doe")
+            attribute("email", "john@example.com")
+            attribute("age", 30)
         }
 
         val user = dsl.factory<UsersRecord>().create(mapOf(
@@ -110,9 +110,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `6 - buildList(n) - Create multiple in-memory records`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val users = dsl.factory<UsersRecord>().buildList(10)
@@ -126,9 +126,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `7 - createList(n) - Create and persist multiple records`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = sequence { n -> "user${n}@example.com" }
-            this["age"] = 25
+            attribute("name", "User")
+            sequenceAttr("email") { n -> "user${n}@example.com" }
+            attribute("age", 25)
         }
 
         val users = dsl.factory<UsersRecord>().createList(10)
@@ -146,9 +146,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `8 - attributes() - Get evaluated attributes as Map`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
         }
 
         val attrs = dsl.factory<UsersRecord>().attributes()
@@ -161,9 +161,9 @@ class BasicExampleTest : JooqTestBase() {
     @Test
     fun `9 - attributes(overrides) - Get evaluated attributes with overrides`() {
         factory<UsersRecord> {
-            this["name"] = "User"
-            this["email"] = "user@example.com"
-            this["age"] = 25
+            attribute("name", "User")
+            attribute("email", "user@example.com")
+            attribute("age", 25)
         }
 
         val attrs = dsl.factory<UsersRecord>().attributes(mapOf(

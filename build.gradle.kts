@@ -33,7 +33,7 @@ dependencies {
     testImplementation("org.testcontainers:mysql:1.19.3")
     testImplementation("org.testcontainers:junit-jupiter:1.19.3")
 
-    jooqGenerator("mysql:mysql-connector-java:8.0.33")
+    jooqGenerator("org.jooq:jooq-meta-extensions:3.18.7")
 }
 
 kotlin {
@@ -103,21 +103,23 @@ jooq {
     version.set("3.18.7")
     configurations {
         create("main") {
-            generateSchemaSourceOnCompilation.set(false)
             jooqConfiguration.apply {
-                jdbc.apply {
-                    driver = "com.mysql.cj.jdbc.Driver"
-                    url = "jdbc:mysql://localhost:3306/faktory_test"
-                    user = "test"
-                    password = "test"
-                }
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
-                        name = "org.jooq.meta.mysql.MySQLDatabase"
-                        inputSchema = "faktory_test"
-                        includes = ".*"
-                        excludes = ""
+                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
+                        properties.add(
+                            org.jooq.meta.jaxb.Property().apply {
+                                key = "scripts"
+                                value = "src/test/resources/schema.sql"
+                            }
+                        )
+                        properties.add(
+                            org.jooq.meta.jaxb.Property().apply {
+                                key = "defaultNameCase"
+                                value = "lower"
+                            }
+                        )
                     }
                     target.apply {
                         packageName = "com.example.faktory.test.jooq"

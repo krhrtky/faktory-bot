@@ -31,7 +31,16 @@ class DefaultFactoryBuilder<T : Record>(
     }
 
     override fun create(overrides: Map<String, Any?>): T {
-        TODO("Create not implemented yet")
+        val record = build(overrides)
+        val table = JooqTableResolver.resolveTable(definition.recordClass)
+
+        val inserted =
+            dsl.insertInto(table)
+                .set(record)
+                .returning()
+                .fetchOne()
+
+        return inserted ?: throw IllegalStateException("Failed to insert record")
     }
 
     override fun create(

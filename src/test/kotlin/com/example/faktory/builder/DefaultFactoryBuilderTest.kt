@@ -7,7 +7,6 @@ import com.example.faktory.test.jooq.tables.Users
 import com.example.faktory.test.jooq.tables.records.UsersRecord
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import kotlin.reflect.KClass
 
 class DefaultFactoryBuilderTest : JooqTestBase() {
     @Test
@@ -67,5 +66,61 @@ class DefaultFactoryBuilderTest : JooqTestBase() {
 
         val count = dsl.selectCount().from(Users.USERS).fetchOne(0, Int::class.java)
         assertThat(count).isEqualTo(0)
+    }
+
+    @Test
+    fun `create persists record to database`() {
+        val definition =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Test User"),
+                        "email" to StaticAttribute("test@example.com"),
+                    ),
+            )
+
+        val builder = DefaultFactoryBuilder(dsl, definition)
+        val user = builder.create()
+
+        assertThat(user.name).isEqualTo("Test User")
+        assertThat(user.email).isEqualTo("test@example.com")
+
+        val count = dsl.selectCount().from(Users.USERS).fetchOne(0, Int::class.java)
+        assertThat(count).isEqualTo(1)
+
+        val found =
+            dsl.selectFrom(Users.USERS)
+                .where(Users.USERS.ID.eq(user.id))
+                .fetchOne()
+
+        assertThat(found).isNotNull
+        assertThat(found?.name).isEqualTo("Test User")
+        assertThat(found?.email).isEqualTo("test@example.com")
+    }
+
+    @Test
+    fun `create applies overrides before persisting`() {
+        val definition =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Default Name"),
+                        "email" to StaticAttribute("default@example.com"),
+                    ),
+            )
+
+        val builder = DefaultFactoryBuilder(dsl, definition)
+        val user = builder.create(overrides = mapOf("name" to "Custom Name"))
+
+        assertThat(user.name).isEqualTo("Custom Name")
+
+        val found =
+            dsl.selectFrom(Users.USERS)
+                .where(Users.USERS.ID.eq(user.id))
+                .fetchOne()
+
+        assertThat(found?.name).isEqualTo("Custom Name")
     }
 }

@@ -4,12 +4,14 @@ import org.jooq.Record
 
 interface FactoryBuilder<T : Record> {
     fun build(overrides: Map<String, Any?> = emptyMap()): T
+
     fun build(
         vararg traits: String,
         overrides: Map<String, Any?> = emptyMap(),
     ): T
 
     fun create(overrides: Map<String, Any?> = emptyMap()): T
+
     fun create(
         vararg traits: String,
         overrides: Map<String, Any?> = emptyMap(),

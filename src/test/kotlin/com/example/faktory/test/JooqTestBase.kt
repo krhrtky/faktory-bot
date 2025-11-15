@@ -48,9 +48,5 @@ abstract class JooqTestBase {
 
     @AfterEach
     fun cleanupDatabase() {
-        dsl.execute("SET FOREIGN_KEY_CHECKS = 0")
-        dsl.execute("TRUNCATE TABLE posts")
-        dsl.execute("TRUNCATE TABLE users")
-        dsl.execute("SET FOREIGN_KEY_CHECKS = 1")
     }
 }

@@ -25,17 +25,13 @@ class FactoryResolver {
 
     private fun <T : Record> mergeChain(chain: List<FactoryDefinition<T>>): ResolvedFactory<T> {
         val mergedAttributes = mutableMapOf<String, com.example.faktory.core.AttributeDefinition<*>>()
-        val mergedCallbacks = DefaultCallbackRegistry<T>()
-        val mergedTransients = TransientDefinition()
+        var mergedCallbacks: com.example.faktory.core.CallbackRegistry<T> = DefaultCallbackRegistry<T>()
+        var mergedTransients = TransientDefinition()
 
         chain.forEach { def ->
             mergedAttributes.putAll(def.attributes)
-            def.callbacks.let { callbacks ->
-                if (callbacks is DefaultCallbackRegistry) {
-                    mergedCallbacks.merge(callbacks)
-                }
-            }
-            mergedTransients.merge(def.transients)
+            mergedCallbacks = mergedCallbacks.merge(def.callbacks)
+            mergedTransients = mergedTransients.merge(def.transients)
         }
 
         return ResolvedFactory(

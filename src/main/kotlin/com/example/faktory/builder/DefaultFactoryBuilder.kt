@@ -1,9 +1,12 @@
 package com.example.faktory.builder
 
 import com.example.faktory.core.AttributeDefinition
+import com.example.faktory.core.CallbackPhase
 import com.example.faktory.core.EvaluationContext
 import com.example.faktory.core.FactoryDefinition
+import com.example.faktory.core.TransientEvaluator
 import com.example.faktory.jooq.JooqTableResolver
+import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.DefaultSequenceManager
 import com.example.faktory.sequence.SequenceManager
 import org.jooq.DSLContext
@@ -15,14 +18,21 @@ class DefaultFactoryBuilder<T : Record>(
     private val sequenceManager: SequenceManager = DefaultSequenceManager(),
 ) : FactoryBuilder<T> {
     override fun build(overrides: Map<String, Any?>): T {
+        val resolved = GlobalFactoryRegistry.resolve(definition)
         val table = JooqTableResolver.resolveTable(definition.recordClass)
         val record = dsl.newRecord(table)
 
-        val attributes = evaluateAttributes(definition.attributes, overrides)
+        val transientKeys = resolved.mergedTransients.properties.keys
+        val attributeOverrides = overrides.filterKeys { it !in transientKeys }
+
+        val attributes = evaluateAttributes(definition.attributes, attributeOverrides)
 
         attributes.forEach { (name, value) ->
             record.set(name, value)
         }
+
+        val transients = TransientEvaluator<T>().evaluate(definition, overrides)
+        resolved.mergedCallbacks.execute(CallbackPhase.AFTER_BUILD, record, transients)
 
         return record
     }
@@ -31,27 +41,53 @@ class DefaultFactoryBuilder<T : Record>(
         vararg traits: String,
         overrides: Map<String, Any?>,
     ): T {
-        TODO("Traits not implemented yet")
+        val applicator = com.example.faktory.trait.TraitApplicator<T>()
+        val withTraits = applicator.apply(definition, traits.toList())
+
+        val builder = DefaultFactoryBuilder(dsl, withTraits, sequenceManager)
+        return builder.build(overrides)
     }
 
     override fun create(overrides: Map<String, Any?>): T {
-        val record = build(overrides)
+        val resolved = GlobalFactoryRegistry.resolve(definition)
+        val transients = TransientEvaluator<T>().evaluateFrom(resolved.mergedTransients, overrides)
+
+        val transientKeys = resolved.mergedTransients.properties.keys
+        val attributeOverrides = overrides.filterKeys { it !in transientKeys }
+
         val table = JooqTableResolver.resolveTable(definition.recordClass)
+        val record = dsl.newRecord(table)
+
+        val attributes = evaluateAttributes(definition.attributes, attributeOverrides)
+
+        attributes.forEach { (name, value) ->
+            record.set(name, value)
+        }
+
+        resolved.mergedCallbacks.execute(CallbackPhase.AFTER_BUILD, record, transients)
+        resolved.mergedCallbacks.execute(CallbackPhase.BEFORE_CREATE, record, transients)
 
         val inserted =
             dsl.insertInto(table)
                 .set(record)
                 .returning()
                 .fetchOne()
+                ?: throw IllegalStateException("Failed to insert record")
 
-        return inserted ?: throw IllegalStateException("Failed to insert record")
+        resolved.mergedCallbacks.execute(CallbackPhase.AFTER_CREATE, inserted, transients)
+
+        return inserted
     }
 
     override fun create(
         vararg traits: String,
         overrides: Map<String, Any?>,
     ): T {
-        TODO("Create not implemented yet")
+        val applicator = com.example.faktory.trait.TraitApplicator<T>()
+        val withTraits = applicator.apply(definition, traits.toList())
+
+        val builder = DefaultFactoryBuilder(dsl, withTraits, sequenceManager)
+        return builder.create(overrides)
     }
 
     override fun buildList(

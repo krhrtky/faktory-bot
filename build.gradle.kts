@@ -23,6 +23,8 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:5.1.0")
 
+    compileOnly("org.junit.jupiter:junit-jupiter-api:5.10.1")
+
     testImplementation("mysql:mysql-connector-java:8.0.33")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
     testImplementation("org.assertj:assertj-core:3.24.2")
@@ -137,6 +139,41 @@ sourceSets {
     main {
         java {
             srcDir("build/generated-jooq")
+        }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            pom {
+                name.set("Faktory Bot")
+                description.set("Type-safe test data factory for jOOQ and Kotlin")
+                url.set("https://github.com/example/faktory-bot")
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("example")
+                        name.set("Faktory Bot Contributors")
+                        email.set("dev@example.com")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:git://github.com/example/faktory-bot.git")
+                    developerConnection.set("scm:git:ssh://github.com/example/faktory-bot.git")
+                    url.set("https://github.com/example/faktory-bot")
+                }
+            }
         }
     }
 }

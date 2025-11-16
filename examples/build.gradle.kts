@@ -1,20 +1,16 @@
 plugins {
     kotlin("jvm")
     id("nu.studer.jooq") version "8.2"
+    application
 }
 
-group = "com.example"
-version = "0.1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
-    // Faktory Bot library - depends on parent project
-    implementation(project(":"))
+    implementation(project(":faktory-core"))
 
-    // jOOQ (inherited from library, but explicit for clarity)
     implementation("org.jooq:jooq:3.18.7")
     implementation("org.jooq:jooq-kotlin:3.18.7")
 
@@ -34,6 +30,12 @@ dependencies {
 
 kotlin {
     jvmToolchain(17)
+
+    sourceSets {
+        main {
+            kotlin.srcDir("build/generated-src/jooq")
+        }
+    }
 }
 
 // jOOQ code generation from DDL files
@@ -62,7 +64,7 @@ jooq {
                     }
                     target.apply {
                         packageName = "com.example.faktory.examples.jooq"
-                        directory = "src/main/kotlin"
+                        directory = "build/generated-src/jooq"
                     }
                     generate.apply {
                         isDeprecated = false
@@ -86,4 +88,8 @@ tasks.test {
 // Ensure jOOQ generation runs before compiling Kotlin
 tasks.named("compileKotlin") {
     dependsOn(tasks.named("generateJooq"))
+}
+
+application {
+    mainClass.set("examples.TraitExampleKt")
 }

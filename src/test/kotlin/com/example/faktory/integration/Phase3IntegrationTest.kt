@@ -46,7 +46,10 @@ class Phase3IntegrationTest : JooqTestBase() {
             attribute("age", 30)
         }
 
+        val user = dsl.factory<UsersRecord>().create()
+
         factory<PostsRecord> {
+            attribute("user_id", user.id)
             attribute("title", "Post Title")
             attribute("content", "Post Content")
         }
@@ -55,6 +58,7 @@ class Phase3IntegrationTest : JooqTestBase() {
 
         assertThat(post.title).isEqualTo("Post Title")
         assertThat(post.content).isEqualTo("Post Content")
+        assertThat(post.userId).isEqualTo(user.id)
     }
 
     @Test

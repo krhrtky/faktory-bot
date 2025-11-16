@@ -30,3 +30,10 @@ class TraitNotFoundException(
 ) : FactoryException(
         "Trait '$traitName' not found",
     )
+
+class MissingRequiredAttributesException(
+    tableName: String,
+    missingFields: List<String>,
+) : FactoryException(
+        "Missing required attributes for table '$tableName': ${missingFields.joinToString(", ")}",
+    )

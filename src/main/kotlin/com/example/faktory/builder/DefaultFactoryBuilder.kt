@@ -6,6 +6,7 @@ import com.example.faktory.core.EvaluationContext
 import com.example.faktory.core.FactoryDefinition
 import com.example.faktory.core.TransientEvaluator
 import com.example.faktory.jooq.JooqTableResolver
+import com.example.faktory.jooq.RequiredAttributeValidator
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.DefaultSequenceManager
 import com.example.faktory.sequence.SequenceManager
@@ -26,6 +27,9 @@ class DefaultFactoryBuilder<T : Record>(
         val attributeOverrides = overrides.filterKeys { it !in transientKeys }
 
         val attributes = evaluateAttributes(definition.attributes, attributeOverrides)
+
+        // Validate required attributes
+        RequiredAttributeValidator.validateRequiredAttributes(table, attributes.keys)
 
         attributes.forEach { (name, value) ->
             record.set(name, value)
@@ -59,6 +63,9 @@ class DefaultFactoryBuilder<T : Record>(
         val record = dsl.newRecord(table)
 
         val attributes = evaluateAttributes(definition.attributes, attributeOverrides)
+
+        // Validate required attributes
+        RequiredAttributeValidator.validateRequiredAttributes(table, attributes.keys)
 
         attributes.forEach { (name, value) ->
             record.set(name, value)

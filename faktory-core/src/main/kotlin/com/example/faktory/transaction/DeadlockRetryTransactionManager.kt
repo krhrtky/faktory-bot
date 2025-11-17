@@ -3,9 +3,8 @@ package com.example.faktory.transaction
 open class DeadlockRetryTransactionManager(
     private val delegate: TransactionManager,
     private val maxRetries: Int = 3,
-    private val baseDelay: Long = 100
+    private val baseDelay: Long = 100,
 ) : TransactionManager by delegate {
-
     open override fun <T> withTransaction(block: () -> T): T {
         var attempts = 0
 

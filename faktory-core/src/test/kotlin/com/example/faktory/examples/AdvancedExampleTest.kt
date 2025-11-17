@@ -37,14 +37,16 @@ class AdvancedExampleTest : JooqTestBase() {
             POSTS.CONTENT set "Content"
             POSTS.USER_ID set sequence { _ -> user.id!! }
 
-            POSTS.CREATED_AT set sequence { n ->
-                LocalDateTime.now().plusDays(n.toLong())
-            }
+            POSTS.CREATED_AT set
+                sequence { n ->
+                    LocalDateTime.now().plusDays(n.toLong())
+                }
         }
 
-        val posts = (1..3).map {
-            dsl.factory<PostsRecord>().create()
-        }
+        val posts =
+            (1..3).map {
+                dsl.factory<PostsRecord>().create()
+            }
 
         assertThat(posts[0].createdAt).isNotNull()
         assertThat(posts[1].createdAt).isAfter(posts[0].createdAt)
@@ -55,11 +57,12 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `2 - Dynamic attribute with context`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
 
-            USERS.AGE set sequence { n ->
-                20 + (n % 50)
-            }
+            USERS.AGE set
+                sequence { n ->
+                    20 + (n % 50)
+                }
         }
 
         val users = dsl.factory<UsersRecord>().buildList(5)
@@ -71,7 +74,7 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `3 - Performance - createList is faster than multiple creates`() {
         factory<UsersRecord> {
             attribute("name", "User")
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -103,7 +106,7 @@ class AdvancedExampleTest : JooqTestBase() {
 
         factory<UsersRecord> {
             attribute("name", "User")
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
             transient {
@@ -118,9 +121,12 @@ class AdvancedExampleTest : JooqTestBase() {
             }
         }
 
-        dsl.factory<UsersRecord>().createList(100, mapOf(
-            "skipCallbacks" to true
-        ))
+        dsl.factory<UsersRecord>().createList(
+            100,
+            mapOf(
+                "skipCallbacks" to true,
+            ),
+        )
 
         assertThat(callbackCount).isEqualTo(0)
     }
@@ -152,9 +158,10 @@ class AdvancedExampleTest : JooqTestBase() {
 
         val user = dsl.factory<UsersRecord>().create()
 
-        val posts = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user.id))
-            .fetch()
+        val posts =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user.id))
+                .fetch()
 
         assertThat(posts).hasSize(5)
     }
@@ -163,17 +170,20 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `6 - Factory composition for complex scenarios`() {
         factory<UsersRecord> {
             attribute("name", "User")
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
         fun createBlogPost(
             authorName: String = "Author",
-            postsCount: Int = 1
+            postsCount: Int = 1,
         ): UsersRecord {
-            val author = dsl.factory<UsersRecord>().create(mapOf(
-                "name" to authorName
-            ))
+            val author =
+                dsl.factory<UsersRecord>().create(
+                    mapOf(
+                        "name" to authorName,
+                    ),
+                )
 
             factory<PostsRecord> {
                 attribute("title", "Post")
@@ -182,22 +192,26 @@ class AdvancedExampleTest : JooqTestBase() {
             }
 
             repeat(postsCount) {
-                dsl.factory<PostsRecord>().create(mapOf(
-                    "title" to "Post ${it + 1}"
-                ))
+                dsl.factory<PostsRecord>().create(
+                    mapOf(
+                        "title" to "Post ${it + 1}",
+                    ),
+                )
             }
 
             return author
         }
 
-        val author = createBlogPost(
-            authorName = "John Doe",
-            postsCount = 3
-        )
+        val author =
+            createBlogPost(
+                authorName = "John Doe",
+                postsCount = 3,
+            )
 
-        val posts = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(author.id))
-            .fetch()
+        val posts =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(author.id))
+                .fetch()
 
         assertThat(posts).hasSize(3)
         assertThat(author.name).isEqualTo("John Doe")
@@ -207,21 +221,22 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `7 - Multi-factory test setup`() {
         factory<UsersRecord> {
             attribute("name", "User")
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
         val authors = dsl.factory<UsersRecord>().createList(3)
 
-        val allPosts = authors.flatMap { author ->
-            factory<PostsRecord> {
-                attribute("title", "Post")
-                attribute("content", "Content")
-                sequenceAttr("user_id") { _ -> author.id!! }
-            }
+        val allPosts =
+            authors.flatMap { author ->
+                factory<PostsRecord> {
+                    attribute("title", "Post")
+                    attribute("content", "Content")
+                    sequenceAttr("user_id") { _ -> author.id!! }
+                }
 
-            dsl.factory<PostsRecord>().createList(5)
-        }
+                dsl.factory<PostsRecord>().createList(5)
+            }
 
         assertThat(allPosts).hasSize(15)
 
@@ -258,9 +273,10 @@ class AdvancedExampleTest : JooqTestBase() {
 
         val user = dsl.factory<UsersRecord>().create()
 
-        val posts = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user.id))
-            .fetch()
+        val posts =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user.id))
+                .fetch()
 
         assertThat(posts).hasSize(0)
 
@@ -272,9 +288,10 @@ class AdvancedExampleTest : JooqTestBase() {
 
         dsl.factory<PostsRecord>().createList(5)
 
-        val postsAfter = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user.id))
-            .fetch()
+        val postsAfter =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user.id))
+                .fetch()
 
         assertThat(postsAfter).hasSize(5)
     }
@@ -283,11 +300,12 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `9 - Conditional attribute generation`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
 
-            USERS.AGE set sequence { n ->
-                if (n % 2 == 0) 30 else 25
-            }
+            USERS.AGE set
+                sequence { n ->
+                    if (n % 2 == 0) 30 else 25
+                }
         }
 
         val users = dsl.factory<UsersRecord>().buildList(10)
@@ -300,7 +318,7 @@ class AdvancedExampleTest : JooqTestBase() {
     fun `10 - Complex test data with multiple factories`() {
         factory<UsersRecord> {
             USERS.NAME set sequence { n -> "User $n" }
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 

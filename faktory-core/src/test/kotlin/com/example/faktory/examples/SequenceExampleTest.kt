@@ -21,7 +21,7 @@ class SequenceExampleTest : JooqTestBase() {
     fun `1 - Simple sequence generates unique email addresses`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -38,7 +38,7 @@ class SequenceExampleTest : JooqTestBase() {
     fun `2 - Multiple sequences maintain independent counters`() {
         factory<UsersRecord> {
             USERS.NAME set sequence { n -> "User $n" }
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set sequence { n -> 20 + n }
         }
 
@@ -73,7 +73,7 @@ class SequenceExampleTest : JooqTestBase() {
     fun `4 - Sequences work with buildList and createList`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -89,7 +89,7 @@ class SequenceExampleTest : JooqTestBase() {
     fun `5 - Sequence reset ensures deterministic values`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -106,13 +106,16 @@ class SequenceExampleTest : JooqTestBase() {
     fun `6 - Sequence with attribute override`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
-        val user = dsl.factory<UsersRecord>().build(mapOf(
-            "email" to "custom@example.com"
-        ))
+        val user =
+            dsl.factory<UsersRecord>().build(
+                mapOf(
+                    "email" to "custom@example.com",
+                ),
+            )
 
         assertThat(user.email).isEqualTo("custom@example.com")
     }
@@ -121,7 +124,7 @@ class SequenceExampleTest : JooqTestBase() {
     fun `7 - Sequences ensure uniqueness across many records`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -135,7 +138,7 @@ class SequenceExampleTest : JooqTestBase() {
     fun `8 - Using sequenceAttr for dynamic attributes`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 

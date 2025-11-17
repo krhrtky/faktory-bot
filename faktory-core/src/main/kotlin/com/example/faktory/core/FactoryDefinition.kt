@@ -21,7 +21,8 @@ interface FactoryDefinition<T : Record> {
     ): FactoryDefinition<T>
 }
 
-internal data class DefaultFactoryDefinition<T : Record>(
+@InternalFactoryApi
+data class DefaultFactoryDefinition<T : Record>(
     override val recordClass: KClass<T>,
     override val name: String? = null,
     override val parent: FactoryDefinition<T>? = null,

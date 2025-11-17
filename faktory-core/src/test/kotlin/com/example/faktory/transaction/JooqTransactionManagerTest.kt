@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class JooqTransactionManagerTest : JooqTestBase() {
-
     private lateinit var transactionManager: JooqTransactionManager
 
     @BeforeEach
@@ -24,7 +23,7 @@ class JooqTransactionManagerTest : JooqTestBase() {
 
         factory<UsersRecord> {
             attribute("name", "Test User")
-            sequenceAttr("email") { n -> "user${n}@example.com" }
+            sequenceAttr("email") { n -> "user$n@example.com" }
             attribute("age", 25)
         }
     }

@@ -46,10 +46,11 @@ class AssociationHelpersTest {
 
     @Test
     fun `association with traits and overrides`() {
-        val attr = association<UsersRecord>(
-            traits = listOf("admin"),
-            overrides = mapOf("age" to 30)
-        )
+        val attr =
+            association<UsersRecord>(
+                traits = listOf("admin"),
+                overrides = mapOf("age" to 30),
+            )
 
         assertThat(attr.traits).containsExactly("admin")
         assertThat(attr.overrides).containsEntry("age", 30)

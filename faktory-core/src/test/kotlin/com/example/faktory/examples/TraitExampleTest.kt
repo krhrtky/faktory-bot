@@ -45,7 +45,7 @@ class TraitExampleTest : JooqTestBase() {
     fun `2 - Multiple traits can be composed`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
             trait("verified") {
@@ -129,7 +129,7 @@ class TraitExampleTest : JooqTestBase() {
     fun `6 - Flag-based traits for feature toggles`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
             trait("verified") {

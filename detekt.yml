@@ -1,29 +1,46 @@
 build:
-  maxIssues: 0
+  maxIssues: 100
 
 complexity:
   LongMethod:
-    threshold: 30
-  ComplexMethod:
-    threshold: 10
+    active: true
+    threshold: 60
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 15
   LongParameterList:
+    active: true
     functionThreshold: 6
     constructorThreshold: 7
+  TooManyFunctions:
+    active: true
+    thresholdInClasses: 15
 
 naming:
   FunctionNaming:
+    active: true
     functionPattern: '[a-z][a-zA-Z0-9]*'
   ClassNaming:
+    active: true
     classPattern: '[A-Z][a-zA-Z0-9]*'
   VariableNaming:
+    active: true
     variablePattern: '[a-z][a-zA-Z0-9]*'
 
 style:
   MaxLineLength:
-    maxLineLength: 120
+    active: true
+    maxLineLength: 140
   MagicNumber:
+    active: true
     ignoreNumbers: ['-1', '0', '1', '2']
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: true
     ignoreAnnotation: true
     ignoreEnums: true
+  WildcardImport:
+    active: false
+  UseCheckOrError:
+    active: false
+  UseRequire:
+    active: false

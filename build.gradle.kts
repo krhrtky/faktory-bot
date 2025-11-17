@@ -1,181 +1,28 @@
 plugins {
-    kotlin("jvm") version "1.9.22"
-    id("org.jlleitschuh.gradle.ktlint") version "12.0.3"
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"
-    id("nu.studer.jooq") version "8.2"
-    jacoco
-    `maven-publish`
+    kotlin("jvm") version "1.9.22" apply false
+    id("org.jlleitschuh.gradle.ktlint") version "12.0.3" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.23.4" apply false
+    id("nu.studer.jooq") version "8.2" apply false
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17" apply false
 }
 
 group = "com.example"
 version = "0.1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
-
-    implementation("org.jooq:jooq:3.18.7")
-    implementation("org.jooq:jooq-kotlin:3.18.7")
-
-    implementation("com.zaxxer:HikariCP:5.1.0")
-
-    compileOnly("org.junit.jupiter:junit-jupiter-api:5.10.1")
-
-    testImplementation("mysql:mysql-connector-java:8.0.33")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
-    testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("io.mockk:mockk:1.13.8")
-    testImplementation("org.testcontainers:testcontainers:1.19.3")
-    testImplementation("org.testcontainers:mysql:1.19.3")
-    testImplementation("org.testcontainers:junit-jupiter:1.19.3")
-
-    jooqGenerator("org.jooq:jooq-meta-extensions:3.18.7")
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-tasks.test {
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
-    environment("DOCKER_HOST", "unix:///Users/takuya.kurihara/.colima/default/docker.sock")
-    environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/Users/takuya.kurihara/.colima/default/docker.sock")
-    environment("TESTCONTAINERS_RYUK_DISABLED", "true")
-}
-
-ktlint {
-    version.set("1.0.1")
-    android.set(false)
-    outputToConsole.set(true)
-    ignoreFailures.set(false)
-    filter {
-        exclude { it.file.absolutePath.contains("generated-jooq") }
+allprojects {
+    repositories {
+        mavenCentral()
     }
 }
 
-detekt {
-    buildUponDefaultConfig = true
-    config.setFrom("$projectDir/detekt.yml")
-}
+subprojects {
+    group = rootProject.group
+    version = rootProject.version
 
-jacoco {
-    toolVersion = "0.8.11"
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
-
-    classDirectories.setFrom(
-        files(
-            classDirectories.files.map {
-                fileTree(it) {
-                    exclude("**/jooq/generated/**")
-                }
-            },
-        ),
-    )
-}
-
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = "0.90".toBigDecimal()
-            }
-        }
-    }
-}
-
-tasks.register("checkQuality") {
-    dependsOn("ktlintCheck", "detekt", "test", "jacocoTestCoverageVerification")
-}
-
-jooq {
-    version.set("3.18.7")
-    configurations {
-        create("main") {
-            jooqConfiguration.apply {
-                generator.apply {
-                    name = "org.jooq.codegen.KotlinGenerator"
-                    database.apply {
-                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
-                        properties.add(
-                            org.jooq.meta.jaxb.Property().apply {
-                                key = "scripts"
-                                value = "src/test/resources/schema.sql"
-                            }
-                        )
-                        properties.add(
-                            org.jooq.meta.jaxb.Property().apply {
-                                key = "defaultNameCase"
-                                value = "lower"
-                            }
-                        )
-                    }
-                    target.apply {
-                        packageName = "com.example.faktory.test.jooq"
-                        directory = "build/generated-jooq"
-                    }
-                    generate.apply {
-                        isDeprecated = false
-                        isRecords = true
-                        isImmutablePojos = false
-                        isFluentSetters = true
-                    }
-                }
-            }
-        }
-    }
-}
-
-sourceSets {
-    main {
-        java {
-            srcDir("build/generated-jooq")
-        }
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-
-            pom {
-                name.set("Faktory Bot")
-                description.set("Type-safe test data factory for jOOQ and Kotlin")
-                url.set("https://github.com/example/faktory-bot")
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("example")
-                        name.set("Faktory Bot Contributors")
-                        email.set("dev@example.com")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/example/faktory-bot.git")
-                    developerConnection.set("scm:git:ssh://github.com/example/faktory-bot.git")
-                    url.set("https://github.com/example/faktory-bot")
-                }
-            }
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "17"
         }
     }
 }

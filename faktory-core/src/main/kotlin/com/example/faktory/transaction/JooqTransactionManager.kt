@@ -5,9 +5,8 @@ import org.jooq.impl.DSL
 import java.sql.Connection
 
 class JooqTransactionManager(
-    private val dsl: DSLContext
+    private val dsl: DSLContext,
 ) : TransactionManager {
-
     private val transactionStack = ThreadLocal.withInitial { mutableListOf<Transaction>() }
 
     override fun <T> withRollback(block: () -> T): T {
@@ -68,15 +67,17 @@ class JooqTransactionManager(
 
     override fun begin() {
         val ctx = dsl.configuration()
-        val connection = ctx.connectionProvider().acquire()
-            ?: throw IllegalStateException("Failed to acquire connection")
+        val connection =
+            ctx.connectionProvider().acquire()
+                ?: throw IllegalStateException("Failed to acquire connection")
         connection.autoCommit = false
         manualTransactionContext.set(ManualTransactionContext(connection, DSL.using(connection, ctx.dialect())))
     }
 
     override fun commit() {
-        val ctx = manualTransactionContext.get()
-            ?: throw IllegalStateException("No active transaction")
+        val ctx =
+            manualTransactionContext.get()
+                ?: throw IllegalStateException("No active transaction")
         try {
             ctx.connection.commit()
         } finally {
@@ -87,8 +88,9 @@ class JooqTransactionManager(
     }
 
     override fun rollback() {
-        val ctx = manualTransactionContext.get()
-            ?: throw IllegalStateException("No active transaction")
+        val ctx =
+            manualTransactionContext.get()
+                ?: throw IllegalStateException("No active transaction")
         try {
             ctx.connection.rollback()
         } finally {
@@ -100,16 +102,17 @@ class JooqTransactionManager(
 
     private data class ManualTransactionContext(
         val connection: java.sql.Connection,
-        val dsl: DSLContext
+        val dsl: DSLContext,
     )
 
     override fun setIsolationLevel(level: IsolationLevel) {
-        val sqlLevel = when (level) {
-            IsolationLevel.READ_UNCOMMITTED -> Connection.TRANSACTION_READ_UNCOMMITTED
-            IsolationLevel.READ_COMMITTED -> Connection.TRANSACTION_READ_COMMITTED
-            IsolationLevel.REPEATABLE_READ -> Connection.TRANSACTION_REPEATABLE_READ
-            IsolationLevel.SERIALIZABLE -> Connection.TRANSACTION_SERIALIZABLE
-        }
+        val sqlLevel =
+            when (level) {
+                IsolationLevel.READ_UNCOMMITTED -> Connection.TRANSACTION_READ_UNCOMMITTED
+                IsolationLevel.READ_COMMITTED -> Connection.TRANSACTION_READ_COMMITTED
+                IsolationLevel.REPEATABLE_READ -> Connection.TRANSACTION_REPEATABLE_READ
+                IsolationLevel.SERIALIZABLE -> Connection.TRANSACTION_SERIALIZABLE
+            }
 
         dsl.connection { conn ->
             conn.transactionIsolation = sqlLevel

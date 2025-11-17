@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class TransactionHelpersTest : JooqTestBase() {
-
     @BeforeEach
     fun setup() {
         GlobalSequenceManager.reset()
@@ -21,7 +20,7 @@ class TransactionHelpersTest : JooqTestBase() {
 
         factory<UsersRecord> {
             attribute("name", "Test User")
-            sequenceAttr("email") { n -> "user${n}@example.com" }
+            sequenceAttr("email") { n -> "user$n@example.com" }
             attribute("age", 25)
         }
     }

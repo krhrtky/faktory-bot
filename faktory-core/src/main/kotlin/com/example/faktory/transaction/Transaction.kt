@@ -6,7 +6,7 @@ import java.util.UUID
 
 data class Transaction(
     val dsl: DSLContext,
-    val id: String = UUID.randomUUID().toString()
+    val id: String = UUID.randomUUID().toString(),
 ) {
     private val savepoints = mutableMapOf<String, Savepoint>()
 
@@ -17,8 +17,9 @@ data class Transaction(
     }
 
     fun rollbackToSavepoint(name: String) {
-        val savepoint = savepoints[name]
-            ?: throw IllegalArgumentException("Savepoint not found: $name")
+        val savepoint =
+            savepoints[name]
+                ?: throw IllegalArgumentException("Savepoint not found: $name")
 
         dsl.connection { conn ->
             conn.rollback(savepoint)
@@ -26,8 +27,9 @@ data class Transaction(
     }
 
     fun releaseSavepoint(name: String) {
-        val savepoint = savepoints.remove(name)
-            ?: throw IllegalArgumentException("Savepoint not found: $name")
+        val savepoint =
+            savepoints.remove(name)
+                ?: throw IllegalArgumentException("Savepoint not found: $name")
 
         dsl.connection { conn ->
             conn.releaseSavepoint(savepoint)

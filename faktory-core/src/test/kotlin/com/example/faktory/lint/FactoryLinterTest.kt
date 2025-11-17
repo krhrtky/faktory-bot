@@ -66,9 +66,10 @@ class FactoryLinterTest : JooqTestBase() {
             attribute("email") { "user@example.com" }
         }
 
-        val exception = assertThrows<FactoryLintException> {
-            FactoryLinter.lint(dsl)
-        }
+        val exception =
+            assertThrows<FactoryLintException> {
+                FactoryLinter.lint(dsl)
+            }
 
         assertThat(exception.recordClass).isEqualTo(UsersRecord::class)
         assertThat(exception.message).contains("UsersRecord")

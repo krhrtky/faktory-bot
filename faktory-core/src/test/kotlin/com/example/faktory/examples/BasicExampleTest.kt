@@ -55,10 +55,13 @@ class BasicExampleTest : JooqTestBase() {
             USERS.AGE set 30
         }
 
-        val user = dsl.factory<UsersRecord>().build(mapOf(
-            "name" to "Jane Smith",
-            "age" to 25
-        ))
+        val user =
+            dsl.factory<UsersRecord>().build(
+                mapOf(
+                    "name" to "Jane Smith",
+                    "age" to 25,
+                ),
+            )
 
         assertThat(user.name).isEqualTo("Jane Smith")
         assertThat(user.email).isEqualTo("john@example.com")
@@ -78,9 +81,10 @@ class BasicExampleTest : JooqTestBase() {
         assertThat(user.id).isNotNull()
         assertThat(user.name).isEqualTo("John Doe")
 
-        val found = dsl.selectFrom(Users.USERS)
-            .where(Users.USERS.ID.eq(user.id))
-            .fetchOne()
+        val found =
+            dsl.selectFrom(Users.USERS)
+                .where(Users.USERS.ID.eq(user.id))
+                .fetchOne()
 
         assertThat(found).isNotNull()
         assertThat(found!!.name).isEqualTo("John Doe")
@@ -94,16 +98,20 @@ class BasicExampleTest : JooqTestBase() {
             USERS.AGE set 30
         }
 
-        val user = dsl.factory<UsersRecord>().create(mapOf(
-            "email" to "custom@example.com"
-        ))
+        val user =
+            dsl.factory<UsersRecord>().create(
+                mapOf(
+                    "email" to "custom@example.com",
+                ),
+            )
 
         assertThat(user.email).isEqualTo("custom@example.com")
         assertThat(user.id).isNotNull()
 
-        val found = dsl.selectFrom(Users.USERS)
-            .where(Users.USERS.ID.eq(user.id))
-            .fetchOne()
+        val found =
+            dsl.selectFrom(Users.USERS)
+                .where(Users.USERS.ID.eq(user.id))
+                .fetchOne()
 
         assertThat(found!!.email).isEqualTo("custom@example.com")
     }
@@ -112,7 +120,7 @@ class BasicExampleTest : JooqTestBase() {
     fun `6 - buildList(n) - Create multiple in-memory records`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -128,7 +136,7 @@ class BasicExampleTest : JooqTestBase() {
     fun `7 - createList(n) - Create and persist multiple records`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -137,9 +145,10 @@ class BasicExampleTest : JooqTestBase() {
         assertThat(users).hasSize(10)
         assertThat(users.all { it.id != null }).isTrue()
 
-        val count = dsl.selectCount()
-            .from(Users.USERS)
-            .fetchOne(0, Int::class.java)
+        val count =
+            dsl.selectCount()
+                .from(Users.USERS)
+                .fetchOne(0, Int::class.java)
 
         assertThat(count).isEqualTo(10)
     }
@@ -167,9 +176,12 @@ class BasicExampleTest : JooqTestBase() {
             USERS.AGE set 25
         }
 
-        val attrs = dsl.factory<UsersRecord>().attributes(mapOf(
-            "name" to "Custom User"
-        ))
+        val attrs =
+            dsl.factory<UsersRecord>().attributes(
+                mapOf(
+                    "name" to "Custom User",
+                ),
+            )
 
         assertThat(attrs["name"]).isEqualTo("Custom User")
         assertThat(attrs["email"]).isEqualTo("user@example.com")

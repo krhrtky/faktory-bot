@@ -532,6 +532,57 @@ trait("ready_user") {
 - **排他的トレイト**: 同時適用不可のトレイト定義
 - **トレイト継承**: トレイト間の継承関係
 
+## factory_bot互換性分析
+
+### 実装済み機能
+
+| 機能 | factory_bot | faktory-bot | ステータス |
+|------|------------|-------------|----------|
+| 基本的なtrait定義 | ✓ | ✓ | ✅ 完全互換 |
+| インスタンス生成時のtrait適用 | ✓ | ✓ | ✅ `create(:user, :admin)` |
+| 複数traitの組み合わせ | ✓ | ✓ | ✅ `create(:user, :admin, :verified)` |
+| 属性の優先順位（後勝ち） | ✓ | ✓ | ✅ 完全互換 |
+| Callbackとの統合 | ✓ | ✓ | ✅ trait内でafterCreate等 |
+| Transient属性との統合 | ✓ | ✓ | ✅ trait内でtransient定義 |
+
+### 追加実装が必要な機能
+
+#### P0（必須）
+**アソシエーション定義時のtrait適用**
+- factory_bot: `association :user, :admin, name: 'John'`
+- faktory-bot: 未実装 → Phase 4.5で対応
+
+#### P1（強く推奨）
+1. **ファクトリ定義時のtrait適用**
+   - factory_bot: `factory :admin_user, traits: [:admin]`
+   - faktory-bot: 未実装 → Phase 4.5で対応
+
+2. **ミックスイントレイト**
+   - factory_bot: グローバルtrait定義と再利用
+   - faktory-bot: 未実装 → Phase 4.5で対応
+
+3. **トレイト内トレイト参照**
+   - factory_bot: trait内で他traitを参照
+   - faktory-bot: 未実装 → Phase 4.5で対応
+
+#### P2（検討）
+**Traitリンティング**
+- factory_bot: `FactoryBot.lint(traits: true)`
+- faktory-bot: 未実装 → Phase 4.5で対応
+
+#### 実装不要
+- **暗黙的trait適用**: 明示性を優先、Kotlin思想に合わない
+- **Enum自動trait生成**: ActiveRecord特有、Kotlin環境では需要低
+
+### faktory-bot独自機能
+
+以下はfactory_botにない、faktory-bot独自の機能：
+
+1. **トレイト解決キャッシュ**: パフォーマンス最適化
+2. **遅延適用**: LazyTraitDefinition
+3. **競合検出**: ConflictDetector
+4. **明示的合成戦略**: LAST_WINS/FIRST_WINS/DEEP_MERGE
+
 ## まとめ
 
 Traitsは以下を実現:
@@ -539,3 +590,8 @@ Traitsは以下を実現:
 2. **再利用性**: トレイトの組み合わせ
 3. **可読性**: テストの意図が明確
 4. **保守性**: 一元管理
+
+### factory_bot互換性ロードマップ
+- ✅ Phase 4: 基本trait機能実装
+- 🚧 Phase 4.5: factory_bot互換性拡張（P0-P2機能）
+- 📋 Phase 5以降: パフォーマンス最適化と品質保証

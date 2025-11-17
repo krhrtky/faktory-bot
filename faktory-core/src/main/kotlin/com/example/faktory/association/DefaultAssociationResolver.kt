@@ -16,23 +16,24 @@ class DefaultAssociationResolver(
     override fun <T : Record> resolve(
         association: AssociationAttribute<T>,
         context: EvaluationContext,
-    ): T = circularDependencyDetector.withCheck(association.targetClass) {
-        val definition = factoryRegistry.find(association.targetClass, association.factoryName)
+    ): T =
+        circularDependencyDetector.withCheck(association.targetClass) {
+            val definition = factoryRegistry.find(association.targetClass, association.factoryName)
 
-        val builder = DefaultFactoryBuilder(dsl, definition, context.sequenceManager)
+            val builder = DefaultFactoryBuilder(dsl, definition, context.sequenceManager)
 
-        if (context.isCreate) {
-            if (association.traits.isNotEmpty()) {
-                builder.create(*association.traits.toTypedArray())
+            if (context.isCreate) {
+                if (association.traits.isNotEmpty()) {
+                    builder.create(*association.traits.toTypedArray())
+                } else {
+                    builder.create(association.overrides)
+                }
             } else {
-                builder.create(association.overrides)
-            }
-        } else {
-            if (association.traits.isNotEmpty()) {
-                builder.build(*association.traits.toTypedArray())
-            } else {
-                builder.build(association.overrides)
+                if (association.traits.isNotEmpty()) {
+                    builder.build(*association.traits.toTypedArray())
+                } else {
+                    builder.build(association.overrides)
+                }
             }
         }
-    }
 }

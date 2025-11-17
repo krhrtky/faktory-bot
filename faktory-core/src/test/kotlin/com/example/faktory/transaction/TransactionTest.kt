@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class TransactionTest : JooqTestBase() {
-
     @Test
     fun `transaction has unique id`() {
         val tx1 = Transaction(dsl)

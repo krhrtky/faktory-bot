@@ -70,9 +70,10 @@ class TransientExampleTest : JooqTestBase() {
         }
 
         val user1 = dsl.factory<UsersRecord>().create()
-        val posts1 = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user1.id))
-            .fetch()
+        val posts1 =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user1.id))
+                .fetch()
         assertThat(posts1).hasSize(5)
 
         GlobalFactoryRegistry.clear()
@@ -101,12 +102,16 @@ class TransientExampleTest : JooqTestBase() {
             }
         }
 
-        val user2 = dsl.factory<UsersRecord>().create(mapOf(
-            "postsCount" to 10
-        ))
-        val posts2 = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user2.id))
-            .fetch()
+        val user2 =
+            dsl.factory<UsersRecord>().create(
+                mapOf(
+                    "postsCount" to 10,
+                ),
+            )
+        val posts2 =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user2.id))
+                .fetch()
         assertThat(posts2).hasSize(10)
     }
 
@@ -134,9 +139,11 @@ class TransientExampleTest : JooqTestBase() {
         dsl.factory<UsersRecord>().create()
         assertThat(emailSent).isFalse()
 
-        dsl.factory<UsersRecord>().create(mapOf(
-            "sendWelcomeEmail" to true
-        ))
+        dsl.factory<UsersRecord>().create(
+            mapOf(
+                "sendWelcomeEmail" to true,
+            ),
+        )
         assertThat(emailSent).isTrue()
     }
 
@@ -178,9 +185,10 @@ class TransientExampleTest : JooqTestBase() {
         }
 
         val user1 = dsl.factory<UsersRecord>().create()
-        val posts1 = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user1.id))
-            .fetch()
+        val posts1 =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user1.id))
+                .fetch()
         assertThat(posts1).hasSize(0)
 
         GlobalFactoryRegistry.clear()
@@ -222,9 +230,10 @@ class TransientExampleTest : JooqTestBase() {
         }
 
         val user2 = dsl.factory<UsersRecord>().create("withPosts")
-        val posts2 = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user2.id))
-            .fetch()
+        val posts2 =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user2.id))
+                .fetch()
         assertThat(posts2).hasSize(5)
 
         GlobalFactoryRegistry.clear()
@@ -266,9 +275,10 @@ class TransientExampleTest : JooqTestBase() {
         }
 
         val user3 = dsl.factory<UsersRecord>().create("withManyPosts")
-        val posts3 = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user3.id))
-            .fetch()
+        val posts3 =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user3.id))
+                .fetch()
         assertThat(posts3).hasSize(50)
     }
 
@@ -329,9 +339,10 @@ class TransientExampleTest : JooqTestBase() {
         }
 
         val user = dsl.factory<UsersRecord>().create()
-        val posts = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user.id))
-            .fetch()
+        val posts =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user.id))
+                .fetch()
 
         assertThat(posts).hasSize(3)
     }
@@ -388,7 +399,7 @@ class TransientExampleTest : JooqTestBase() {
         assertThat(executionLog).containsExactly(
             "afterBuild: test",
             "beforeCreate: test",
-            "afterCreate: test"
+            "afterCreate: test",
         )
     }
 }

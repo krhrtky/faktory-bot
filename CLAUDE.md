@@ -30,6 +30,84 @@ The system is designed with a layered architecture (top to bottom):
 
 See `docs/architecture/system-design.md` for detailed architecture.
 
+## Development Philosophy
+
+### t-wada TDD Principles (MUST FOLLOW)
+
+**IMPORTANT**: All implementation MUST strictly follow Test-Driven Development as taught by t-wada (Takuto Wada).
+
+#### The Three Laws of TDD
+1. **Write no production code except to pass a failing test**
+   - Never write production code without a failing test first
+   - The test defines the specification
+
+2. **Write only enough of a test to demonstrate a failure**
+   - Write minimal test code to see it fail
+   - One failing assertion at a time
+
+3. **Write only enough production code to pass the currently failing test**
+   - Implement the simplest solution that makes the test pass
+   - No premature optimization or extra features
+
+#### Red-Green-Refactor Cycle (MANDATORY)
+1. **Red**: Write a failing test
+   - Think about WHAT you want to achieve (specification)
+   - Write the test as if the API already exists
+   - Run the test and confirm it fails for the right reason
+
+2. **Green**: Make it pass with minimum code
+   - Write the simplest code that makes the test pass
+   - Duplication is acceptable at this stage
+   - Focus on making it work, not making it perfect
+
+3. **Refactor**: Improve the code while keeping tests green
+   - Remove duplication
+   - Improve names and structure
+   - Ensure all tests remain green throughout
+   - Refactor both production code AND test code
+
+#### TDD Workflow for This Project
+```kotlin
+// 1. RED: Write failing test first
+@Test
+fun `generate factory with required fields`() {
+    val processor = FactoryGeneratorProcessor(mockCodeGen, mockLogger)
+    val result = processor.process(mockResolver)
+
+    // This will fail - implementation doesn't exist yet
+    assertThat(result).isEmpty()
+}
+
+// 2. GREEN: Minimum implementation
+override fun process(resolver: Resolver): List<KSAnnotated> {
+    return emptyList() // Simplest code to pass
+}
+
+// 3. REFACTOR: Improve while keeping tests green
+override fun process(resolver: Resolver): List<KSAnnotated> {
+    val symbols = resolver.getSymbolsWithAnnotation(ANNOTATION_NAME)
+    return symbols.filterNot { it.validate() }.toList()
+}
+```
+
+#### TDD Discipline Rules
+- ❌ **NEVER** write production code without a failing test
+- ❌ **NEVER** write more test code than needed to fail
+- ❌ **NEVER** write more production code than needed to pass
+- ✅ **ALWAYS** see the test fail before making it pass
+- ✅ **ALWAYS** keep the cycle short (minutes, not hours)
+- ✅ **ALWAYS** refactor only when tests are green
+- ✅ **ALWAYS** run all tests before committing
+
+#### Benefits of TDD in This Project
+1. **Specification**: Tests document how the code should behave
+2. **Safety**: Refactoring is safe with comprehensive test coverage
+3. **Design**: TDD drives better API design (test-first thinking)
+4. **Confidence**: Every feature is verified by tests
+5. **Debugging**: When a test fails, you know exactly what broke
+
+**Remember**: If you're writing code without a test, STOP and write the test first.
+
 ## Development Commands
 
 ### Project Setup (Phase 1)

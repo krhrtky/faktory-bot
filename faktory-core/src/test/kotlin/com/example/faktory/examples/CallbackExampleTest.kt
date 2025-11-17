@@ -6,7 +6,6 @@ import com.example.faktory.sequence.GlobalSequenceManager
 import com.example.faktory.test.JooqTestBase
 import com.example.faktory.test.jooq.tables.Posts
 import com.example.faktory.test.jooq.tables.Posts.Companion.POSTS
-import com.example.faktory.test.jooq.tables.Users
 import com.example.faktory.test.jooq.tables.Users.Companion.USERS
 import com.example.faktory.test.jooq.tables.records.PostsRecord
 import com.example.faktory.test.jooq.tables.records.UsersRecord
@@ -99,9 +98,11 @@ class CallbackExampleTest : JooqTestBase() {
         assertThat(validUser.id).isNotNull()
 
         try {
-            dsl.factory<UsersRecord>().create(mapOf(
-                "email" to "invalid-email"
-            ))
+            dsl.factory<UsersRecord>().create(
+                mapOf(
+                    "email" to "invalid-email",
+                ),
+            )
             throw AssertionError("Should have thrown exception")
         } catch (e: IllegalArgumentException) {
             assertThat(e.message).contains("Invalid email")
@@ -150,9 +151,10 @@ class CallbackExampleTest : JooqTestBase() {
 
         val user = dsl.factory<UsersRecord>().create()
 
-        val posts = dsl.selectFrom(Posts.POSTS)
-            .where(Posts.POSTS.USER_ID.eq(user.id))
-            .fetch()
+        val posts =
+            dsl.selectFrom(Posts.POSTS)
+                .where(Posts.POSTS.USER_ID.eq(user.id))
+                .fetch()
 
         assertThat(posts).hasSize(5)
     }
@@ -184,7 +186,7 @@ class CallbackExampleTest : JooqTestBase() {
         assertThat(executionOrder).containsExactly(
             "afterBuild",
             "beforeCreate",
-            "afterCreate"
+            "afterCreate",
         )
     }
 
@@ -215,7 +217,7 @@ class CallbackExampleTest : JooqTestBase() {
         assertThat(executionOrder).containsExactly(
             "callback1",
             "callback2",
-            "callback3"
+            "callback3",
         )
     }
 
@@ -225,7 +227,7 @@ class CallbackExampleTest : JooqTestBase() {
 
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
             afterCreate { _, _ ->

@@ -1,6 +1,5 @@
 package com.example.faktory.dsl
 
-import com.example.faktory.annotation.InternalFactoryApi
 import com.example.faktory.builder.DefaultFactoryBuilder
 import com.example.faktory.builder.FactoryBuilder
 import com.example.faktory.core.AttributeDefinition
@@ -20,9 +19,7 @@ import com.example.faktory.sequence.GlobalSequenceManager
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.TableField
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 class FactoryDslBuilder<T : Record>(
     private val recordClass: KClass<T>,
@@ -72,7 +69,7 @@ class FactoryDslBuilder<T : Record>(
     @Deprecated(
         message = "Use type-safe TableField syntax instead: USERS.NAME set \"value\"",
         replaceWith = ReplaceWith("/* Use TableField.set() instead */"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.WARNING,
     )
     fun attribute(
         name: String,
@@ -84,7 +81,7 @@ class FactoryDslBuilder<T : Record>(
     @Deprecated(
         message = "Use type-safe TableField syntax instead: USERS.NAME set { \"value\" }",
         replaceWith = ReplaceWith("/* Use TableField.set() with lambda instead */"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.WARNING,
     )
     fun attribute(
         name: String,
@@ -96,7 +93,7 @@ class FactoryDslBuilder<T : Record>(
     @Deprecated(
         message = "Use type-safe TableField syntax instead: USERS.EMAIL set sequence { n -> \"user\${n}@example.com\" }",
         replaceWith = ReplaceWith("/* Use TableField.set(sequence { ... }) instead */"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.WARNING,
     )
     fun sequenceAttr(
         name: String,
@@ -162,7 +159,6 @@ class TransientDslBuilder {
         return TransientDefinition(properties)
     }
 }
-
 
 inline fun <reified T : Record> factory(
     name: String? = null,

@@ -27,11 +27,12 @@ class DefaultFactoryBuilder<T : Record>(
         if (definition.defaultTraits.isNotEmpty()) {
             val applicator = com.example.faktory.trait.TraitApplicator<T>()
             val withTraits = applicator.apply(definition, definition.defaultTraits)
-            val withoutDefaultTraits = if (withTraits is DefaultFactoryDefinition) {
-                withTraits.copy(defaultTraits = emptyList())
-            } else {
-                withTraits
-            }
+            val withoutDefaultTraits =
+                if (withTraits is DefaultFactoryDefinition) {
+                    withTraits.copy(defaultTraits = emptyList())
+                } else {
+                    withTraits
+                }
             val builder = DefaultFactoryBuilder(dsl, withoutDefaultTraits, sequenceManager, associationResolver)
             return builder.build(overrides)
         }
@@ -62,11 +63,12 @@ class DefaultFactoryBuilder<T : Record>(
         val applicator = com.example.faktory.trait.TraitApplicator<T>()
         val withTraits = applicator.apply(definition, traits.toList())
 
-        val withoutDefaultTraits = if (withTraits is DefaultFactoryDefinition) {
-            withTraits.copy(defaultTraits = emptyList())
-        } else {
-            withTraits
-        }
+        val withoutDefaultTraits =
+            if (withTraits is DefaultFactoryDefinition) {
+                withTraits.copy(defaultTraits = emptyList())
+            } else {
+                withTraits
+            }
 
         val builder = DefaultFactoryBuilder(dsl, withoutDefaultTraits, sequenceManager, associationResolver)
         return builder.build(emptyMap())
@@ -76,11 +78,12 @@ class DefaultFactoryBuilder<T : Record>(
         if (definition.defaultTraits.isNotEmpty()) {
             val applicator = com.example.faktory.trait.TraitApplicator<T>()
             val withTraits = applicator.apply(definition, definition.defaultTraits)
-            val withoutDefaultTraits = if (withTraits is DefaultFactoryDefinition) {
-                withTraits.copy(defaultTraits = emptyList())
-            } else {
-                withTraits
-            }
+            val withoutDefaultTraits =
+                if (withTraits is DefaultFactoryDefinition) {
+                    withTraits.copy(defaultTraits = emptyList())
+                } else {
+                    withTraits
+                }
             val builder = DefaultFactoryBuilder(dsl, withoutDefaultTraits, sequenceManager, associationResolver)
             return builder.create(overrides)
         }
@@ -122,11 +125,12 @@ class DefaultFactoryBuilder<T : Record>(
         val applicator = com.example.faktory.trait.TraitApplicator<T>()
         val withTraits = applicator.apply(definition, traits.toList())
 
-        val withoutDefaultTraits = if (withTraits is DefaultFactoryDefinition) {
-            withTraits.copy(defaultTraits = emptyList())
-        } else {
-            withTraits
-        }
+        val withoutDefaultTraits =
+            if (withTraits is DefaultFactoryDefinition) {
+                withTraits.copy(defaultTraits = emptyList())
+            } else {
+                withTraits
+            }
 
         val builder = DefaultFactoryBuilder(dsl, withoutDefaultTraits, sequenceManager, associationResolver)
         return builder.create(emptyMap())
@@ -157,11 +161,12 @@ class DefaultFactoryBuilder<T : Record>(
     ): Map<String, Any?> {
         val evaluated = mutableMapOf<String, Any?>()
 
-        val resolver = associationResolver ?: DefaultAssociationResolver(
-            dsl = dsl,
-            factoryRegistry = GlobalFactoryRegistry,
-            circularDependencyDetector = CircularDependencyDetector()
-        )
+        val resolver =
+            associationResolver ?: DefaultAssociationResolver(
+                dsl = dsl,
+                factoryRegistry = GlobalFactoryRegistry,
+                circularDependencyDetector = CircularDependencyDetector(),
+            )
 
         definitions.forEach { (name, attrDef) ->
             val context =

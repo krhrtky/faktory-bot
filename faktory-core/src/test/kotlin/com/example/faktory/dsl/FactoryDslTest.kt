@@ -4,10 +4,6 @@ import com.example.faktory.core.DynamicAttribute
 import com.example.faktory.core.SequenceAttribute
 import com.example.faktory.core.StaticAttribute
 import org.assertj.core.api.Assertions.assertThat
-import org.jooq.TableField
-import org.jooq.impl.DSL
-import org.jooq.impl.SQLDataType
-import org.jooq.impl.TableImpl
 import org.jooq.impl.TableRecordImpl
 import org.junit.jupiter.api.Test
 

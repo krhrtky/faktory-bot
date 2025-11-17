@@ -5,7 +5,6 @@ import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager
 import com.example.faktory.test.JooqTestBase
-import com.example.faktory.test.jooq.tables.Posts
 import com.example.faktory.test.jooq.tables.Posts.Companion.POSTS
 import com.example.faktory.test.jooq.tables.Users
 import com.example.faktory.test.jooq.tables.Users.Companion.USERS
@@ -26,7 +25,7 @@ class Phase3IntegrationTest : JooqTestBase() {
     fun `factory with sequence generates unique values`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -44,7 +43,7 @@ class Phase3IntegrationTest : JooqTestBase() {
     fun `factory with association builds related records`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 30
         }
 
@@ -139,7 +138,7 @@ class Phase3IntegrationTest : JooqTestBase() {
     fun `sequence is reset between tests`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 

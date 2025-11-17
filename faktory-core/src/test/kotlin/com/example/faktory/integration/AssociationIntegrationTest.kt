@@ -26,38 +26,43 @@ class AssociationIntegrationTest : JooqTestBase() {
     fun setup() {
         factoryRegistry = DefaultFactoryRegistry()
         sequenceManager = DefaultSequenceManager()
-        associationResolver = DefaultAssociationResolver(
-            dsl = dsl,
-            factoryRegistry = factoryRegistry,
-            circularDependencyDetector = CircularDependencyDetector()
-        )
+        associationResolver =
+            DefaultAssociationResolver(
+                dsl = dsl,
+                factoryRegistry = factoryRegistry,
+                circularDependencyDetector = CircularDependencyDetector(),
+            )
     }
 
     @Test
     fun `create post with association to user`() {
-        val userFactory = DefaultFactoryDefinition(
-            recordClass = UsersRecord::class,
-            attributes = mapOf(
-                "name" to StaticAttribute("Test User"),
-                "email" to StaticAttribute("user@example.com"),
-                "age" to StaticAttribute(25),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
+        val userFactory =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Test User"),
+                        "email" to StaticAttribute("user@example.com"),
+                        "age" to StaticAttribute(25),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
             )
-        )
         factoryRegistry.register(userFactory)
 
-        val postFactory = DefaultFactoryDefinition(
-            recordClass = PostsRecord::class,
-            attributes = mapOf(
-                "user_id" to association<UsersRecord>(),
-                "title" to StaticAttribute("Test Post"),
-                "content" to StaticAttribute("Test Content"),
-                "published" to StaticAttribute(false),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
+        val postFactory =
+            DefaultFactoryDefinition(
+                recordClass = PostsRecord::class,
+                attributes =
+                    mapOf(
+                        "user_id" to association<UsersRecord>(),
+                        "title" to StaticAttribute("Test Post"),
+                        "content" to StaticAttribute("Test Content"),
+                        "published" to StaticAttribute(false),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
             )
-        )
 
         val builder = DefaultFactoryBuilder(dsl, postFactory, sequenceManager, associationResolver)
         val post = builder.create()
@@ -76,29 +81,33 @@ class AssociationIntegrationTest : JooqTestBase() {
 
     @Test
     fun `build post with association to user (in-memory only)`() {
-        val userFactory = DefaultFactoryDefinition(
-            recordClass = UsersRecord::class,
-            attributes = mapOf(
-                "name" to StaticAttribute("Test User"),
-                "email" to StaticAttribute("user@example.com"),
-                "age" to StaticAttribute(25),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
+        val userFactory =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Test User"),
+                        "email" to StaticAttribute("user@example.com"),
+                        "age" to StaticAttribute(25),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
             )
-        )
         factoryRegistry.register(userFactory)
 
-        val postFactory = DefaultFactoryDefinition(
-            recordClass = PostsRecord::class,
-            attributes = mapOf(
-                "user_id" to association<UsersRecord>(),
-                "title" to StaticAttribute("Test Post"),
-                "content" to StaticAttribute("Test Content"),
-                "published" to StaticAttribute(false),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
+        val postFactory =
+            DefaultFactoryDefinition(
+                recordClass = PostsRecord::class,
+                attributes =
+                    mapOf(
+                        "user_id" to association<UsersRecord>(),
+                        "title" to StaticAttribute("Test Post"),
+                        "content" to StaticAttribute("Test Content"),
+                        "published" to StaticAttribute(false),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
             )
-        )
 
         val builder = DefaultFactoryBuilder(dsl, postFactory, sequenceManager, associationResolver)
         val post = builder.build()
@@ -112,38 +121,45 @@ class AssociationIntegrationTest : JooqTestBase() {
 
     @Test
     fun `create post with association to user with trait`() {
-        val userFactory = DefaultFactoryDefinition(
-            recordClass = UsersRecord::class,
-            attributes = mapOf(
-                "name" to StaticAttribute("Regular User"),
-                "email" to StaticAttribute("user@example.com"),
-                "age" to StaticAttribute(25),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
-            ),
-            traits = mapOf(
-                "admin" to TraitDefinition(
-                    name = "admin",
-                    attributes = mapOf(
-                        "name" to StaticAttribute("Admin User"),
-                        "age" to StaticAttribute(35)
-                    )
-                )
+        val userFactory =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Regular User"),
+                        "email" to StaticAttribute("user@example.com"),
+                        "age" to StaticAttribute(25),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
+                traits =
+                    mapOf(
+                        "admin" to
+                            TraitDefinition(
+                                name = "admin",
+                                attributes =
+                                    mapOf(
+                                        "name" to StaticAttribute("Admin User"),
+                                        "age" to StaticAttribute(35),
+                                    ),
+                            ),
+                    ),
             )
-        )
         factoryRegistry.register(userFactory)
 
-        val postFactory = DefaultFactoryDefinition(
-            recordClass = PostsRecord::class,
-            attributes = mapOf(
-                "user_id" to association<UsersRecord>(traits = listOf("admin")),
-                "title" to StaticAttribute("Test Post"),
-                "content" to StaticAttribute("Test Content"),
-                "published" to StaticAttribute(false),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
+        val postFactory =
+            DefaultFactoryDefinition(
+                recordClass = PostsRecord::class,
+                attributes =
+                    mapOf(
+                        "user_id" to association<UsersRecord>(traits = listOf("admin")),
+                        "title" to StaticAttribute("Test Post"),
+                        "content" to StaticAttribute("Test Content"),
+                        "published" to StaticAttribute(false),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
             )
-        )
 
         val builder = DefaultFactoryBuilder(dsl, postFactory, sequenceManager, associationResolver)
         val post = builder.create()
@@ -159,43 +175,52 @@ class AssociationIntegrationTest : JooqTestBase() {
 
     @Test
     fun `create post with association to user with multiple traits`() {
-        val userFactory = DefaultFactoryDefinition(
-            recordClass = UsersRecord::class,
-            attributes = mapOf(
-                "name" to StaticAttribute("Regular User"),
-                "email" to StaticAttribute("user@example.com"),
-                "age" to StaticAttribute(25),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
-            ),
-            traits = mapOf(
-                "admin" to TraitDefinition(
-                    name = "admin",
-                    attributes = mapOf(
-                        "name" to StaticAttribute("Admin User")
-                    )
-                ),
-                "senior" to TraitDefinition(
-                    name = "senior",
-                    attributes = mapOf(
-                        "age" to StaticAttribute(65)
-                    )
-                )
+        val userFactory =
+            DefaultFactoryDefinition(
+                recordClass = UsersRecord::class,
+                attributes =
+                    mapOf(
+                        "name" to StaticAttribute("Regular User"),
+                        "email" to StaticAttribute("user@example.com"),
+                        "age" to StaticAttribute(25),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
+                traits =
+                    mapOf(
+                        "admin" to
+                            TraitDefinition(
+                                name = "admin",
+                                attributes =
+                                    mapOf(
+                                        "name" to StaticAttribute("Admin User"),
+                                    ),
+                            ),
+                        "senior" to
+                            TraitDefinition(
+                                name = "senior",
+                                attributes =
+                                    mapOf(
+                                        "age" to StaticAttribute(65),
+                                    ),
+                            ),
+                    ),
             )
-        )
         factoryRegistry.register(userFactory)
 
-        val postFactory = DefaultFactoryDefinition(
-            recordClass = PostsRecord::class,
-            attributes = mapOf(
-                "user_id" to association<UsersRecord>(traits = listOf("admin", "senior")),
-                "title" to StaticAttribute("Test Post"),
-                "content" to StaticAttribute("Test Content"),
-                "published" to StaticAttribute(false),
-                "created_at" to StaticAttribute(LocalDateTime.now()),
-                "updated_at" to StaticAttribute(LocalDateTime.now())
+        val postFactory =
+            DefaultFactoryDefinition(
+                recordClass = PostsRecord::class,
+                attributes =
+                    mapOf(
+                        "user_id" to association<UsersRecord>(traits = listOf("admin", "senior")),
+                        "title" to StaticAttribute("Test Post"),
+                        "content" to StaticAttribute("Test Content"),
+                        "published" to StaticAttribute(false),
+                        "created_at" to StaticAttribute(LocalDateTime.now()),
+                        "updated_at" to StaticAttribute(LocalDateTime.now()),
+                    ),
             )
-        )
 
         val builder = DefaultFactoryBuilder(dsl, postFactory, sequenceManager, associationResolver)
         val post = builder.create()

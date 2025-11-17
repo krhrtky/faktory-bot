@@ -96,13 +96,13 @@ jooq {
                             org.jooq.meta.jaxb.Property().apply {
                                 key = "scripts"
                                 value = "src/test/resources/schema.sql"
-                            }
+                            },
                         )
                         properties.add(
                             org.jooq.meta.jaxb.Property().apply {
                                 key = "defaultNameCase"
                                 value = "lower"
-                            }
+                            },
                         )
                     }
                     target.apply {

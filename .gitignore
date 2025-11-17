@@ -18,3 +18,4 @@ build/
 bin/
 *.db
 mise.toml
+.mcp.json

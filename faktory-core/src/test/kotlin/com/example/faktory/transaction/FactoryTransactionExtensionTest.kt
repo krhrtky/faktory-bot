@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(FactoryTransactionExtension::class)
 class FactoryTransactionExtensionTest {
-
     @Test
     @Disabled("JUnit Extension requires TransactionManager to be set before test execution")
     fun `extension integration test`() {

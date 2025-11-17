@@ -1,14 +1,15 @@
 # Faktory Bot
 
-Type-safe test data factory library for jOOQ and Kotlin, inspired by Ruby's Factory Bot.
+**Type-safe** test data factory library for jOOQ and Kotlin, inspired by Ruby's Factory Bot.
 
 ## Features
 
-- 🔒 **Type-safe**: Full compile-time type checking with Kotlin and jOOQ
+- 🔒 **Type-safe**: Full compile-time type checking with jOOQ TableField syntax
 - 🚀 **Fast**: Batch insert optimization with `createList()`
-- 🧩 **Flexible**: Traits, callbacks, and factory inheritance
+- 🧩 **Flexible**: Traits, callbacks, global traits, and trait composition
 - 🔄 **Test isolation**: Automatic transaction rollback support
 - 📝 **Declarative DSL**: Clean and readable factory definitions
+- ✨ **IDE support**: Full autocomplete and type inference
 
 ## Installation
 
@@ -30,17 +31,24 @@ dependencies {
 
 ## Quick Start
 
-### 1. Define a Factory
+### 1. Define a Factory (Type-safe with jOOQ TableField)
 
 ```kotlin
 import com.example.faktory.dsl.factory
+import com.example.jooq.tables.Users.Companion.USERS
 
 factory<UsersRecord> {
-    name = "Default User"
-    email = sequence { n -> "user${n}@example.com" }
-    age = 25
+    USERS.NAME set "Default User"
+    USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+    USERS.AGE set 25
 }
 ```
+
+**Why type-safe?**
+- ✅ Compile-time verification of field names
+- ✅ IDE autocomplete for all fields
+- ✅ Refactoring-safe (field renames detected)
+- ✅ Type checking for values
 
 ### 2. Use in Tests
 
@@ -82,7 +90,7 @@ Generate unique values automatically:
 
 ```kotlin
 factory<UsersRecord> {
-    email = sequence { n -> "user${n}@example.com" }
+    USERS.EMAIL set sequence { n -> "user${n}@example.com" }
 }
 
 // Generates: user1@example.com, user2@example.com, ...
@@ -90,20 +98,20 @@ factory<UsersRecord> {
 
 ### Traits
 
-Reusable attribute variations:
+Reusable attribute variations (type-safe):
 
 ```kotlin
 factory<UsersRecord> {
-    name = "User"
-    email = sequence { n -> "user${n}@example.com" }
-    age = 25
+    USERS.NAME set "User"
+    USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+    USERS.AGE set 25
 
     trait("admin") {
-        role = "ADMIN"
+        USERS.ROLE set "ADMIN"
     }
 
     trait("inactive") {
-        isActive = false
+        USERS.IS_ACTIVE set false
     }
 }
 
@@ -114,12 +122,13 @@ val inactiveAdmin = dsl.factory<UsersRecord>().create("admin", "inactive")
 
 ### Associations
 
-Automatically create related records:
+Automatically create related records (type-safe):
 
 ```kotlin
 factory<PostsRecord> {
-    title = "Default Post"
-    content = "Content"
+    POSTS.TITLE set "Default Post"
+    POSTS.CONTENT set "Content"
+    POSTS.USER_ID set association<UsersRecord>()
     // userId will be automatically set from created user
 }
 
@@ -132,8 +141,8 @@ Pass non-database values to callbacks:
 
 ```kotlin
 factory<UsersRecord> {
-    name = "User"
-    email = "user@example.com"
+    USERS.NAME set "User"
+    USERS.EMAIL set "user@example.com"
 
     transient {
         set("postsCount", 5)
@@ -154,7 +163,7 @@ Execute code at specific lifecycle points:
 
 ```kotlin
 factory<UsersRecord> {
-    name = "User"
+    USERS.NAME set "User"
 
     afterBuild { user, _ ->
         println("Built user: ${user.name}")
@@ -188,17 +197,34 @@ fun `test with automatic rollback`() = withFactoryTransaction {
 
 ## Advanced Usage
 
-### Factory Inheritance
+### Global Traits
+
+Share traits across multiple factories:
 
 ```kotlin
-factory<UsersRecord>("base_user") {
-    name = "User"
-    email = sequence { n -> "user${n}@example.com" }
-    age = 25
+globalTrait<UsersRecord>("timestamps") {
+    USERS.CREATED_AT set { LocalDateTime.now() }
+    USERS.UPDATED_AT set { LocalDateTime.now() }
 }
 
-factory<UsersRecord>("admin_user", parent = "base_user") {
-    role = "ADMIN"
+// Use in any factory
+val user = dsl.factory<UsersRecord>().create("timestamps")
+```
+
+### Trait Composition
+
+Reference traits within other traits:
+
+```kotlin
+factory<OrdersRecord> {
+    trait("completed") {
+        ORDERS.STATUS set "COMPLETED"
+    }
+
+    trait("shipped") {
+        includeTrait("completed")  // Includes completed trait
+        ORDERS.SHIPPED_AT set { LocalDateTime.now() }
+    }
 }
 ```
 

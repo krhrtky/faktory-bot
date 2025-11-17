@@ -85,7 +85,7 @@ class Phase4IntegrationTest : JooqTestBase() {
     fun `attributes method returns evaluated attributes`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -119,7 +119,7 @@ class Phase4IntegrationTest : JooqTestBase() {
     fun `buildList creates multiple records`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -134,7 +134,7 @@ class Phase4IntegrationTest : JooqTestBase() {
     fun `createList persists multiple records`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
         }
 
@@ -143,7 +143,10 @@ class Phase4IntegrationTest : JooqTestBase() {
         assertThat(users).hasSize(3)
         assertThat(users.all { it.id != null }).isTrue()
 
-        val count = dsl.selectCount().from(com.example.faktory.test.jooq.tables.Users.USERS).fetchOne(0, Int::class.java)
+        val count =
+            dsl.selectCount().from(
+                com.example.faktory.test.jooq.tables.Users.USERS,
+            ).fetchOne(0, Int::class.java)
         assertThat(count).isEqualTo(3)
     }
 }

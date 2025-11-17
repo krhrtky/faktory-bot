@@ -1,8 +1,10 @@
 package com.example.faktory.core
 
+import com.example.faktory.annotation.InternalFactoryApi
 import org.jooq.Record
 
-internal data class TraitDefinition<T : Record>(
+@InternalFactoryApi
+data class TraitDefinition<T : Record>(
     val name: String,
     val attributes: Map<String, AttributeDefinition<*>> = emptyMap(),
     val callbacks: CallbackRegistry<T> = DefaultCallbackRegistry(),

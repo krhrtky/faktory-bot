@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class DeadlockRetryTransactionManagerTest {
-
     @Test
     fun `retries on deadlock`() {
         val delegate = mockk<TransactionManager>()
@@ -77,28 +76,29 @@ class DeadlockRetryTransactionManagerTest {
 
         every { delegate.withTransaction<Unit>(any()) } throws deadlockException
 
-        val manager = object : DeadlockRetryTransactionManager(delegate, maxRetries = 3, baseDelay = 100) {
-            override fun <T> withTransaction(block: () -> T): T {
-                var attempts = 0
-                val startTime = System.currentTimeMillis()
+        val manager =
+            object : DeadlockRetryTransactionManager(delegate, maxRetries = 3, baseDelay = 100) {
+                override fun <T> withTransaction(block: () -> T): T {
+                    var attempts = 0
+                    val startTime = System.currentTimeMillis()
 
-                while (attempts < 3) {
-                    try {
-                        return delegate.withTransaction(block)
-                    } catch (e: Exception) {
-                        if (e.message?.contains("deadlock", ignoreCase = true) == true && attempts < 2) {
-                            attempts++
-                            val delay = (100 * (1 shl attempts)).toLong()
-                            delays.add(delay)
-                            Thread.sleep(delay)
-                        } else {
-                            throw e
+                    while (attempts < 3) {
+                        try {
+                            return delegate.withTransaction(block)
+                        } catch (e: Exception) {
+                            if (e.message?.contains("deadlock", ignoreCase = true) == true && attempts < 2) {
+                                attempts++
+                                val delay = (100 * (1 shl attempts)).toLong()
+                                delays.add(delay)
+                                Thread.sleep(delay)
+                            } else {
+                                throw e
+                            }
                         }
                     }
+                    throw IllegalStateException("Unreachable")
                 }
-                throw IllegalStateException("Unreachable")
             }
-        }
 
         assertThatThrownBy {
             manager.withTransaction { }

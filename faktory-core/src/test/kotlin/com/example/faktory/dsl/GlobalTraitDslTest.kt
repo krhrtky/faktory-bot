@@ -1,7 +1,6 @@
 package com.example.faktory.dsl
 
 import com.example.faktory.core.DynamicAttribute
-import com.example.faktory.core.StaticAttribute
 import com.example.faktory.registry.GlobalTraitRegistry
 import com.example.faktory.test.jooq.tables.records.UsersRecord
 import org.assertj.core.api.Assertions.assertThat

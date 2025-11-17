@@ -1,16 +1,5 @@
 # Traits
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P1
-- [Factory DSL](./factory-dsl.md) - ファクトリ定義（依存元）
-- [Callbacks](./callbacks.md) - コールバック（依存先）
-- [Inheritance](./inheritance.md) - ファクトリ継承（関連）
-- [Phase 4: Extensions](../implementation/phase4-extensions.md) - 実装タスク
-
-## 依存関係
-**依存元**: Factory DSL
-**依存先**: Callbacks
-
 ## 概要
 
 Traitsは、ファクトリのバリエーションを定義する機能。同じレコード型で異なる状態やロールのテストデータを簡潔に作成できる。

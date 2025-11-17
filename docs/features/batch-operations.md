@@ -1,15 +1,5 @@
 # Batch Operations
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P2
-- [Build Strategies](./build-strategies.md) - createList戦略（依存元）
-- [jOOQ Integration](../architecture/jooq-integration.md) - バッチINSERT
-- [Phase 5: Performance](../implementation/phase5-performance.md) - 実装タスク
-
-## 依存関係
-**依存元**: Build Strategies
-**依存先**: jOOQ Integration
-
 ## 概要
 
 Batch Operationsは、大量のテストデータを効率的に生成する機能。個別INSERT の代わりにバッチINSERTを使用してパフォーマンスを向上。

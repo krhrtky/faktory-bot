@@ -1,10 +1,5 @@
 # Core Interfaces
 
-## 関連ドキュメント
-- [System Design](./system-design.md) - アーキテクチャ全体像
-- [jOOQ Integration](./jooq-integration.md) - jOOQ固有の実装
-- [Compile-time Validation](./compile-time-validation.md) - コンパイル時検証の選択肢
-
 ## インターフェース設計方針
 
 1. **DSL指向**: jOOQ TableField を使った型安全で自然な記述

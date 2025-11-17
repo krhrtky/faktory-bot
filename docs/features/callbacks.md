@@ -1,16 +1,5 @@
 # Callbacks
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P1
-- [Factory DSL](./factory-dsl.md) - ファクトリ定義（依存元）
-- [Build Strategies](./build-strategies.md) - ビルド戦略（依存元）
-- [Transients](./transients.md) - Transient属性（関連）
-- [Phase 4: Extensions](../implementation/phase4-extensions.md) - 実装タスク
-
-## 依存関係
-**依存元**: Factory DSL, Build Strategies
-**依存先**: なし（独立機能）
-
 ## 概要
 
 Callbacksは、レコードのライフサイクルにフックを提供する機能。オブジェクト生成前後に任意の処理を実行できる。

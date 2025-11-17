@@ -1,16 +1,5 @@
 # Build Strategies
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P0
-- [Factory DSL](./factory-dsl.md) - ファクトリ定義（依存元）
-- [Callbacks](./callbacks.md) - コールバック（依存先）
-- [jOOQ Integration](../architecture/jooq-integration.md) - jOOQ統合
-- [Phase 2: Core](../implementation/phase2-core.md) - 実装タスク
-
-## 依存関係
-**依存元**: Factory DSL
-**依存先**: Callbacks, jOOQ Integration
-
 ## 概要
 
 Build Strategiesは、テストデータの生成方法を選択する機能。用途に応じて4つの戦略を提供。

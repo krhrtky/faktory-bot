@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Faktory Bot is a type-safe test data factory library for jOOQ and Kotlin, inspired by Ruby's Factory Bot. It provides a declarative DSL for defining and generating test data with full type safety and jOOQ integration.
 
-**Status**: Currently in planning/documentation phase. No implementation code exists yet.
+**Status**: v0.1.0 - Core features implemented and tested.
 
 ## Architecture
 
@@ -173,51 +173,41 @@ open build/reports/jacoco/test/html/index.html
 ./gradlew integrationTest
 ```
 
-## Implementation Phases
+## Implemented Features (v0.1.0)
 
-The project follows an 8-phase implementation plan. Current phase documentation:
+All core features have been implemented and tested:
 
-### Phase 1: Foundation (1 week)
-- Gradle project setup with Kotlin 1.9.22, jOOQ 3.18.7
-- GitHub Actions CI/CD
-- Code quality tools (ktlint, detekt, jacoco)
-- Directory structure: `core/`, `dsl/`, `builder/`, `registry/`, `sequence/`, `jooq/`
+### Core Features
+- ✅ Factory DSL with type-safe attribute definitions
+- ✅ Build strategies: `build()`, `create()`, `buildList()`, `createList()`
+- ✅ Sequence generation with thread-safe counters
+- ✅ Association resolution with circular dependency detection
+- ✅ Transient attributes for callback parameters
+- ✅ Trait system for reusable attribute sets
+- ✅ Callback hooks: `afterBuild`, `beforeCreate`, `afterCreate`
+- ✅ Transaction management with automatic rollback
+- ✅ Factory registry with inheritance support
+- ✅ Global trait system for cross-factory traits
+- ✅ Batch operations with optimized batch INSERT
 
-**Key files to create**:
-- `build.gradle.kts`: Dependencies and build configuration
-- `.github/workflows/ci.yml`: CI pipeline
-- `.editorconfig`: Code formatting
-- `detekt.yml`: Static analysis rules
-
-See `docs/implementation/phase1-foundation.md`
-
-### Phase 2: Core (2 weeks)
-- FactoryRegistry implementation
-- Factory DSL (FactoryDslBuilder)
-- build()/create() methods
-- Basic test suite
-
-**Key interfaces**:
-- `FactoryDefinition<T : Record>`
-- `FactoryBuilder<T : Record>`
-- `AttributeDefinition<T>` (sealed: Static, Dynamic, Sequence, Association)
-
-See `docs/implementation/phase2-core.md`
-
-### Phase 3: Essentials (2 weeks)
-- SequenceManager with AtomicInteger for thread-safety
-- AssociationResolver with circular reference detection
-- Transient attributes and TransientContext
-- Integration tests (PostgreSQL, MySQL, H2)
-
-See `docs/implementation/phase3-essentials.md`
-
-### Phases 4-8
-See `docs/implementation/` for Phase 4 (Extensions), Phase 5 (Performance), Phase 6 (Transactions), Phase 7 (Quality), Phase 8 (Release)
+### Project Structure
+```
+faktory-core/src/main/kotlin/com/example/faktory/
+├── core/           # FactoryDefinition, AttributeDefinition, callbacks
+├── dsl/            # FactoryDslBuilder, DSL functions
+├── builder/        # FactoryBuilder implementations
+├── registry/       # FactoryRegistry, GlobalFactoryRegistry, GlobalTraitRegistry
+├── sequence/       # SequenceManager
+├── association/    # AssociationResolver, CircularDependencyDetector
+├── trait/          # TraitApplicator
+├── transaction/    # TransactionManager, JooqTransactionManager
+├── jooq/           # JooqTableResolver, RequiredAttributeValidator
+└── lint/           # FactoryLinter
+```
 
 ## Module Structure
 
-Planned package organization:
+Actual package organization:
 ```
 com.example.faktory/
 ├── core/           # FactoryDefinition, AttributeDefinition

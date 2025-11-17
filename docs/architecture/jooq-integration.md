@@ -1,10 +1,5 @@
 # jOOQ Integration
 
-## 関連ドキュメント
-- [System Design](./system-design.md) - アーキテクチャ全体像
-- [Core Interfaces](./core-interfaces.md) - コアインターフェース
-- [Phase 2: Core](../implementation/phase2-core.md) - 実装タスク
-
 ## jOOQ概要
 
 ### jOOQの特徴

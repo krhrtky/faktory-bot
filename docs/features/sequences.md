@@ -1,15 +1,5 @@
 # Sequences
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P0
-- [Factory DSL](./factory-dsl.md) - ファクトリ定義（依存元）
-- [Core Interfaces](../architecture/core-interfaces.md) - SequenceManager
-- [Phase 3: Essentials](../implementation/phase3-essentials.md) - 実装タスク
-
-## 依存関係
-**依存元**: Factory DSL
-**依存先**: なし（独立機能）
-
 ## 概要
 
 Sequencesは、一意な値を自動生成する機能。メールアドレスやユーザーコードなど、ユニーク制約のある属性に使用。

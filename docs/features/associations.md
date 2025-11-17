@@ -1,16 +1,5 @@
 # Associations
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P1
-- [Factory DSL](./factory-dsl.md) - ファクトリ定義（依存元）
-- [Build Strategies](./build-strategies.md) - build/create戦略（依存元）
-- [jOOQ Integration](../architecture/jooq-integration.md) - 外部キー解決
-- [Phase 3: Essentials](../implementation/phase3-essentials.md) - 実装タスク
-
-## 依存関係
-**依存元**: Factory DSL, Build Strategies
-**依存先**: FactoryRegistry, jOOQ Integration
-
 ## 概要
 
 Associationsは、関連レコードを自動的に生成・解決する機能。外部キー関係のあるテストデータを簡潔に作成できる。

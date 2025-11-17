@@ -1,16 +1,5 @@
 # Inheritance
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P2
-- [Factory DSL](./factory-dsl.md) - ファクトリ定義（依存元）
-- [Traits](./traits.md) - トレイト（関連）
-- [Callbacks](./callbacks.md) - コールバック（依存先）
-- [Phase 4: Extensions](../implementation/phase4-extensions.md) - 実装タスク
-
-## 依存関係
-**依存元**: Factory DSL
-**依存先**: Traits, Callbacks
-
 ## 概要
 
 Inheritanceは、ファクトリ定義を継承して新しいファクトリを作成する機能。共通部分を親ファクトリに定義し、DRYを実現。

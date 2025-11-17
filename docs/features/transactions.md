@@ -1,15 +1,5 @@
 # Transactions
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P2
-- [Build Strategies](./build-strategies.md) - create戦略（依存元）
-- [jOOQ Integration](../architecture/jooq-integration.md) - jOOQトランザクション
-- [Phase 6: Transactions](../implementation/phase6-transactions.md) - 実装タスク
-
-## 依存関係
-**依存元**: Build Strategies（create）
-**依存先**: jOOQ Integration
-
 ## 概要
 
 Transactionsは、テストデータの作成をトランザクション内で行い、テスト後に自動ロールバックする機能。テストの独立性を保証する。

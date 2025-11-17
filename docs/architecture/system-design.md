@@ -1,11 +1,5 @@
 # System Design
 
-## 関連ドキュメント
-- [Product Vision](../planning/product-vision.md) - 課題と解決方法
-- [Core Interfaces](./core-interfaces.md) - コアインターフェース定義
-- [jOOQ Integration](./jooq-integration.md) - jOOQ統合設計
-- [Phase 1: Foundation](../implementation/phase1-foundation.md) - 基盤構築タスク
-
 ## アーキテクチャ概要
 
 ### レイヤー構造

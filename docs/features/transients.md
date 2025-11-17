@@ -1,16 +1,5 @@
 # Transients
 
-## 関連ドキュメント
-- [Product Backlog](../planning/product-backlog.md) - 優先度: P1
-- [Factory DSL](./factory-dsl.md) - ファクトリ定義（依存元）
-- [Callbacks](./callbacks.md) - コールバック（依存先）
-- [Traits](./traits.md) - トレイト（関連）
-- [Phase 3: Essentials](../implementation/phase3-essentials.md) - 実装タスク
-
-## 依存関係
-**依存元**: Factory DSL
-**依存先**: Callbacks
-
 ## 概要
 
 Transientsは、レコードには永続化されないテスト用のパラメータを定義する機能。コールバックや動的属性の制御に使用。

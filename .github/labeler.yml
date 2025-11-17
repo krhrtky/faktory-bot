@@ -1,0 +1,30 @@
+# Configuration for PR labeler
+# Labels PRs based on changed files
+
+'documentation':
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**/*', '*.md', 'LICENSE']
+
+'dependencies':
+  - changed-files:
+    - any-glob-to-any-file: ['**/build.gradle.kts', 'gradle/**/*', 'gradle.properties']
+
+'ci/cd':
+  - changed-files:
+    - any-glob-to-any-file: ['.github/workflows/**/*', '.github/labeler.yml']
+
+'core':
+  - changed-files:
+    - any-glob-to-any-file: ['faktory-core/src/main/**/*']
+
+'tests':
+  - changed-files:
+    - any-glob-to-any-file: ['**/src/test/**/*']
+
+'examples':
+  - changed-files:
+    - any-glob-to-any-file: ['examples/**/*']
+
+'configuration':
+  - changed-files:
+    - any-glob-to-any-file: ['*.yml', '*.yaml', '.editorconfig', 'detekt.yml']

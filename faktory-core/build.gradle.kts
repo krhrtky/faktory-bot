@@ -35,9 +35,23 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
-    environment("DOCKER_HOST", "unix:///Users/takuya.kurihara/.colima/default/docker.sock")
-    environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/Users/takuya.kurihara/.colima/default/docker.sock")
-    environment("TESTCONTAINERS_RYUK_DISABLED", "true")
+
+    // Testcontainers configuration for local development (Colima on macOS)
+    // These are optional and only applied if the environment variables are set
+    val dockerHost = System.getenv("DOCKER_HOST")
+    val dockerSocket = System.getenv("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE")
+
+    if (dockerHost != null) {
+        environment("DOCKER_HOST", dockerHost)
+    }
+    if (dockerSocket != null) {
+        environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", dockerSocket)
+    }
+
+    // Disable Ryuk for environments where it's not needed (CI, etc.)
+    if (System.getenv("CI") == "true" || System.getenv("TESTCONTAINERS_RYUK_DISABLED") == "true") {
+        environment("TESTCONTAINERS_RYUK_DISABLED", "true")
+    }
 }
 
 ktlint {

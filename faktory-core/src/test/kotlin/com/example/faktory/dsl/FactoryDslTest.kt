@@ -3,6 +3,7 @@ package com.example.faktory.dsl
 import com.example.faktory.core.DynamicAttribute
 import com.example.faktory.core.SequenceAttribute
 import com.example.faktory.core.StaticAttribute
+import com.example.faktory.test.DynamicTrait
 import org.assertj.core.api.Assertions.assertThat
 import org.jooq.impl.TableRecordImpl
 import org.junit.jupiter.api.Test
@@ -53,11 +54,12 @@ class FactoryDslTest {
 
     @Test
     fun `factory DSL supports traits`() {
+        val premiumTrait = DynamicTrait<TestRecord>("premium")
         val definition =
             factory<TestRecord> {
                 attribute("name", "User")
 
-                trait("premium") {
+                trait(premiumTrait) {
                     attribute("isPremium", true)
                 }
             }
@@ -67,11 +69,12 @@ class FactoryDslTest {
 
     @Test
     fun `factory DSL supports default traits`() {
+        val adminTrait = DynamicTrait<TestRecord>("admin")
         val definition =
             factory<TestRecord>(defaultTraits = listOf("admin")) {
                 attribute("name", "User")
 
-                trait("admin") {
+                trait(adminTrait) {
                     attribute("role", "admin")
                 }
             }
@@ -81,15 +84,17 @@ class FactoryDslTest {
 
     @Test
     fun `factory DSL supports multiple default traits`() {
+        val adminTrait = DynamicTrait<TestRecord>("admin")
+        val verifiedTrait = DynamicTrait<TestRecord>("verified")
         val definition =
             factory<TestRecord>(defaultTraits = listOf("admin", "verified")) {
                 attribute("name", "User")
 
-                trait("admin") {
+                trait(adminTrait) {
                     attribute("role", "admin")
                 }
 
-                trait("verified") {
+                trait(verifiedTrait) {
                     attribute("verified", true)
                 }
             }

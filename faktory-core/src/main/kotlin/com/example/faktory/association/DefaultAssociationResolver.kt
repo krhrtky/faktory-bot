@@ -18,22 +18,19 @@ class DefaultAssociationResolver(
         context: EvaluationContext,
     ): T =
         circularDependencyDetector.withCheck(association.targetClass) {
-            val definition = factoryRegistry.find(association.targetClass, association.factoryName)
+            var definition = factoryRegistry.find(association.targetClass, association.factoryName)
+
+            if (association.traits.isNotEmpty()) {
+                val applicator = com.example.faktory.trait.TraitApplicator<T>()
+                definition = applicator.apply(definition, association.traits)
+            }
 
             val builder = DefaultFactoryBuilder(dsl, definition, context.sequenceManager)
 
             if (context.isCreate) {
-                if (association.traits.isNotEmpty()) {
-                    builder.create(*association.traits.toTypedArray())
-                } else {
-                    builder.create(association.overrides)
-                }
+                builder.create(association.overrides)
             } else {
-                if (association.traits.isNotEmpty()) {
-                    builder.build(*association.traits.toTypedArray())
-                } else {
-                    builder.build(association.overrides)
-                }
+                builder.build(association.overrides)
             }
         }
 }

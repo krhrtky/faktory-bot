@@ -3,6 +3,7 @@ package com.example.faktory.integration
 import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager
+import com.example.faktory.test.CommonUserTrait
 import com.example.faktory.test.JooqTestBase
 import com.example.faktory.test.jooq.tables.Users.Companion.USERS
 import com.example.faktory.test.jooq.tables.records.UsersRecord
@@ -24,13 +25,13 @@ class Phase4IntegrationTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("admin") {
+            trait(CommonUserTrait.Admin) {
                 USERS.NAME set "Admin User"
                 USERS.AGE set 35
             }
         }
 
-        val admin = dsl.factory<UsersRecord>().build("admin")
+        val admin = dsl.factory<UsersRecord>().build(CommonUserTrait.Admin)
 
         assertThat(admin.name).isEqualTo("Admin User")
         assertThat(admin.email).isEqualTo("user@example.com")
@@ -44,16 +45,16 @@ class Phase4IntegrationTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("verified") {
+            trait(CommonUserTrait.Verified) {
                 USERS.EMAIL set "verified@example.com"
             }
 
-            trait("senior") {
+            trait(CommonUserTrait.Senior) {
                 USERS.AGE set 60
             }
         }
 
-        val user = dsl.factory<UsersRecord>().build("verified", "senior")
+        val user = dsl.factory<UsersRecord>().build(CommonUserTrait.Verified, CommonUserTrait.Senior)
 
         assertThat(user.name).isEqualTo("User")
         assertThat(user.email).isEqualTo("verified@example.com")
@@ -69,14 +70,14 @@ class Phase4IntegrationTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("withCallback") {
+            trait(CommonUserTrait.WithCallback) {
                 afterCreate { _, _ ->
                     callbackCalled = true
                 }
             }
         }
 
-        dsl.factory<UsersRecord>().create("withCallback")
+        dsl.factory<UsersRecord>().create(CommonUserTrait.WithCallback)
 
         assertThat(callbackCalled).isTrue()
     }

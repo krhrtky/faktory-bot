@@ -59,9 +59,10 @@ class DefaultFactoryBuilder<T : Record>(
         return record
     }
 
-    override fun build(vararg traits: String): T {
+    override fun build(vararg traits: com.example.faktory.core.Trait<T>): T {
+        val traitNames = traits.map { it.name }
         val applicator = com.example.faktory.trait.TraitApplicator<T>()
-        val withTraits = applicator.apply(definition, traits.toList())
+        val withTraits = applicator.apply(definition, traitNames)
 
         val withoutDefaultTraits =
             if (withTraits is DefaultFactoryDefinition) {
@@ -121,9 +122,10 @@ class DefaultFactoryBuilder<T : Record>(
         return inserted
     }
 
-    override fun create(vararg traits: String): T {
+    override fun create(vararg traits: com.example.faktory.core.Trait<T>): T {
+        val traitNames = traits.map { it.name }
         val applicator = com.example.faktory.trait.TraitApplicator<T>()
-        val withTraits = applicator.apply(definition, traits.toList())
+        val withTraits = applicator.apply(definition, traitNames)
 
         val withoutDefaultTraits =
             if (withTraits is DefaultFactoryDefinition) {

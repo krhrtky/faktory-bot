@@ -107,14 +107,14 @@ class FactoryDslBuilder<T : Record>(
     }
 
     fun trait(
-        name: String,
+        trait: com.example.faktory.core.Trait<T>,
         block: FactoryDslBuilder<T>.() -> Unit,
     ) {
         val builder = FactoryDslBuilder(recordClass)
         builder.block()
-        traits[name] =
+        traits[trait.name] =
             TraitDefinition(
-                name = name,
+                name = trait.name,
                 attributes = builder.attributes,
                 callbacks = builder.callbacks,
                 transients = builder.transients,

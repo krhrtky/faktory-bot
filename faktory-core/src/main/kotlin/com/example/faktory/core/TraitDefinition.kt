@@ -3,6 +3,10 @@ package com.example.faktory.core
 import com.example.faktory.annotation.InternalFactoryApi
 import org.jooq.Record
 
+interface Trait<T : Record> {
+    val name: String
+}
+
 @InternalFactoryApi
 data class TraitDefinition<T : Record>(
     val name: String,

@@ -3,6 +3,7 @@ package com.example.faktory.examples
 import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager
+import com.example.faktory.test.CommonUserTrait
 import com.example.faktory.test.JooqTestBase
 import com.example.faktory.test.jooq.tables.Posts
 import com.example.faktory.test.jooq.tables.Posts.Companion.POSTS
@@ -253,14 +254,14 @@ class CallbackExampleTest : JooqTestBase() {
                 executionOrder.add("base")
             }
 
-            trait("withCallback") {
+            trait(CommonUserTrait.WithCallback) {
                 afterCreate { _, _ ->
                     executionOrder.add("trait")
                 }
             }
         }
 
-        dsl.factory<UsersRecord>().create("withCallback")
+        dsl.factory<UsersRecord>().create(CommonUserTrait.WithCallback)
 
         assertThat(executionOrder).containsExactly("base", "trait")
     }

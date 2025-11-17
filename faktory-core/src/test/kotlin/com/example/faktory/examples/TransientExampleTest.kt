@@ -2,6 +2,7 @@ package com.example.faktory.examples
 
 import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
+import com.example.faktory.test.CommonUserTrait
 import com.example.faktory.sequence.GlobalSequenceManager
 import com.example.faktory.test.JooqTestBase
 import com.example.faktory.test.jooq.tables.Posts
@@ -158,13 +159,13 @@ class TransientExampleTest : JooqTestBase() {
                 set("postsCount", 0)
             }
 
-            trait("withPosts") {
+            trait(CommonUserTrait.WithPosts) {
                 transient {
                     set("postsCount", 5)
                 }
             }
 
-            trait("withManyPosts") {
+            trait(CommonUserTrait.WithManyPosts) {
                 transient {
                     set("postsCount", 50)
                 }
@@ -203,13 +204,13 @@ class TransientExampleTest : JooqTestBase() {
                 set("postsCount", 0)
             }
 
-            trait("withPosts") {
+            trait(CommonUserTrait.WithPosts) {
                 transient {
                     set("postsCount", 5)
                 }
             }
 
-            trait("withManyPosts") {
+            trait(CommonUserTrait.WithManyPosts) {
                 transient {
                     set("postsCount", 50)
                 }
@@ -229,7 +230,7 @@ class TransientExampleTest : JooqTestBase() {
             }
         }
 
-        val user2 = dsl.factory<UsersRecord>().create("withPosts")
+        val user2 = dsl.factory<UsersRecord>().create(CommonUserTrait.WithPosts)
         val posts2 =
             dsl.selectFrom(Posts.POSTS)
                 .where(Posts.POSTS.USER_ID.eq(user2.id))
@@ -248,13 +249,13 @@ class TransientExampleTest : JooqTestBase() {
                 set("postsCount", 0)
             }
 
-            trait("withPosts") {
+            trait(CommonUserTrait.WithPosts) {
                 transient {
                     set("postsCount", 5)
                 }
             }
 
-            trait("withManyPosts") {
+            trait(CommonUserTrait.WithManyPosts) {
                 transient {
                     set("postsCount", 50)
                 }
@@ -274,7 +275,7 @@ class TransientExampleTest : JooqTestBase() {
             }
         }
 
-        val user3 = dsl.factory<UsersRecord>().create("withManyPosts")
+        val user3 = dsl.factory<UsersRecord>().create(CommonUserTrait.WithManyPosts)
         val posts3 =
             dsl.selectFrom(Posts.POSTS)
                 .where(Posts.POSTS.USER_ID.eq(user3.id))

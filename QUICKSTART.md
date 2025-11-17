@@ -45,6 +45,29 @@
 
 ## 使用方法
 
+### 型安全なトレイト定義（必須）
+
+```kotlin
+import com.example.faktory.core.Trait
+import com.example.faktory.examples.jooq.tables.records.UsersRecord
+
+// トレイトを sealed class で定義（IDE補完とコンパイル時検証）
+// 重要: Record型をGenericsで指定する
+sealed class UserRole : Trait<UsersRecord> {
+    data object Admin : UserRole() {
+        override val name = "admin"
+    }
+
+    data object Premium : UserRole() {
+        override val name = "premium"
+    }
+
+    data object Guest : UserRole() {
+        override val name = "guest"
+    }
+}
+```
+
 ### DSL による Factory 定義
 
 ```kotlin
@@ -57,10 +80,20 @@ factory<UsersRecord> {
     email = sequence { n -> "user${n}@example.com" }
     age = 25
 
-    // トレイト定義
-    trait("admin") {
+    // 型安全なトレイト定義（必須）
+    trait(UserRole.Admin) {
         name = "Admin User"
-        role = "admin"
+        age = 35
+    }
+
+    trait(UserRole.Premium) {
+        name = "Premium User"
+        age = 30
+    }
+
+    trait(UserRole.Guest) {
+        name = "Guest User"
+        age = 20
     }
 
     // コールバック
@@ -87,10 +120,18 @@ val savedUser = create<UsersRecord>(dsl) {
     email = "bob@example.com"
 }
 
-// トレイトの適用
-val admin = create<UsersRecord>(dsl, traits = listOf("admin")) {
-    email = "admin@example.com"
+// トレイトの適用（型安全）
+val adminUser = dsl.factory<UsersRecord>().create(UserRole.Admin)
+val premiumUser = dsl.factory<UsersRecord>().create(UserRole.Premium)
+
+// 複数のトレイトを組み合わせ（同じRecord型のTraitのみ指定可能）
+sealed class UserStatus : Trait<UsersRecord> {
+    data object Active : UserStatus() {
+        override val name = "active"
+    }
 }
+
+val activePremium = dsl.factory<UsersRecord>().create(UserRole.Premium, UserStatus.Active)
 
 // 一括生成
 val users = buildList<UsersRecord>(10) {

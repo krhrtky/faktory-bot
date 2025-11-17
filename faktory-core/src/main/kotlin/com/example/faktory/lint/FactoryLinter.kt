@@ -56,8 +56,10 @@ object FactoryLinter {
         if (lintTraits && factory is com.example.faktory.core.DefaultFactoryDefinition) {
             factory.traits.forEach { (traitName, _) ->
                 try {
-                    val builder = DefaultFactoryBuilder(dsl, factory, GlobalSequenceManager.getInstance())
-                    builder.build(traitName)
+                    val applicator = com.example.faktory.trait.TraitApplicator<T>()
+                    val withTrait = applicator.apply(factory, listOf(traitName))
+                    val builder = DefaultFactoryBuilder(dsl, withTrait, GlobalSequenceManager.getInstance())
+                    builder.build()
                 } catch (e: Exception) {
                     throw FactoryLintException(
                         factory.recordClass,

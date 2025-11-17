@@ -23,14 +23,14 @@ class TraitExample : ExamplesTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("admin") {
+            trait(UserTrait.Admin) {
                 USERS.NAME set "Admin User"
                 USERS.AGE set 35
             }
         }
 
         val regularUser = dsl.factory<UsersRecord>().build()
-        val adminUser = dsl.factory<UsersRecord>().build("admin")
+        val adminUser = dsl.factory<UsersRecord>().build(UserTrait.Admin)
 
         assertThat(regularUser.name).isEqualTo("Regular User")
         assertThat(regularUser.age).isEqualTo(25)
@@ -47,16 +47,16 @@ class TraitExample : ExamplesTestBase() {
             USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
-            trait("verified") {
+            trait(UserTrait.Verified) {
                 USERS.EMAIL set "verified@example.com"
             }
 
-            trait("senior") {
+            trait(UserTrait.Senior) {
                 USERS.AGE set 60
             }
         }
 
-        val user = dsl.factory<UsersRecord>().build("verified", "senior")
+        val user = dsl.factory<UsersRecord>().build(UserTrait.Verified, UserTrait.Senior)
 
         assertThat(user.name).isEqualTo("User")
         assertThat(user.email).isEqualTo("verified@example.com")
@@ -70,19 +70,19 @@ class TraitExample : ExamplesTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("young") {
+            trait(UserTrait.Young) {
                 USERS.AGE set 18
             }
 
-            trait("old") {
+            trait(UserTrait.Old) {
                 USERS.AGE set 70
             }
         }
 
-        val user1 = dsl.factory<UsersRecord>().build("young", "old")
+        val user1 = dsl.factory<UsersRecord>().build(UserTrait.Young, UserTrait.Old)
         assertThat(user1.age).isEqualTo(70)
 
-        val user2 = dsl.factory<UsersRecord>().build("old", "young")
+        val user2 = dsl.factory<UsersRecord>().build(UserTrait.Old, UserTrait.Young)
         assertThat(user2.age).isEqualTo(18)
     }
 }

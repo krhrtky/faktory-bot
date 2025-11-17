@@ -222,12 +222,12 @@ class BasicExample : ExamplesTestBase() {
             USERS.EMAIL set sequence { n -> "user${n}@example.com" }
             USERS.AGE set 25
 
-            trait("admin") {
+            trait(UserTrait.Admin) {
                 USERS.NAME set "Admin User"
                 USERS.AGE set 35
             }
 
-            trait("premium") {
+            trait(UserTrait.Premium) {
                 USERS.NAME set "Premium User"
                 USERS.AGE set 30
             }
@@ -239,12 +239,12 @@ class BasicExample : ExamplesTestBase() {
         assertThat(regular.age).isEqualTo(25)
 
         // Create admin user with trait
-        val admin = dsl.factory<UsersRecord>().create("admin")
+        val admin = dsl.factory<UsersRecord>().create(UserTrait.Admin)
         assertThat(admin.name).isEqualTo("Admin User")
         assertThat(admin.age).isEqualTo(35)
 
         // Create premium user with trait
-        val premium = dsl.factory<UsersRecord>().create("premium")
+        val premium = dsl.factory<UsersRecord>().create(UserTrait.Premium)
         assertThat(premium.name).isEqualTo("Premium User")
         assertThat(premium.age).isEqualTo(30)
     }

@@ -3,6 +3,7 @@ package com.example.faktory.trait
 import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager
+import com.example.faktory.test.CommonUserTrait
 import com.example.faktory.test.JooqTestBase
 import com.example.faktory.test.jooq.tables.Users.Companion.USERS
 import com.example.faktory.test.jooq.tables.records.UsersRecord
@@ -25,14 +26,14 @@ class TraitApplicatorTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("admin") {
+            trait(CommonUserTrait.Admin) {
                 USERS.NAME set "Admin"
                 USERS.AGE set 35
             }
         }
 
         val regularUser = dsl.factory<UsersRecord>().build()
-        val adminUser = dsl.factory<UsersRecord>().build("admin")
+        val adminUser = dsl.factory<UsersRecord>().build(CommonUserTrait.Admin)
 
         assertThat(regularUser.name).isEqualTo("User")
         assertThat(regularUser.age).isEqualTo(25)
@@ -48,30 +49,19 @@ class TraitApplicatorTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("verified") {
+            trait(CommonUserTrait.Verified) {
                 USERS.EMAIL set "verified@example.com"
             }
 
-            trait("senior") {
+            trait(CommonUserTrait.Senior) {
                 USERS.AGE set 60
             }
         }
 
-        val user = dsl.factory<UsersRecord>().build("verified", "senior")
+        val user = dsl.factory<UsersRecord>().build(CommonUserTrait.Verified, CommonUserTrait.Senior)
 
         assertThat(user.email).isEqualTo("verified@example.com")
         assertThat(user.age).isEqualTo(60)
-    }
-
-    @Test
-    fun `throws exception for non-existent trait`() {
-        factory<UsersRecord> {
-            USERS.NAME set "User"
-        }
-
-        assertThatThrownBy {
-            dsl.factory<UsersRecord>().build("nonexistent")
-        }.hasMessageContaining("nonexistent")
     }
 
     @Test
@@ -82,14 +72,14 @@ class TraitApplicatorTest : JooqTestBase() {
             USERS.NAME set "User"
             USERS.EMAIL set "user@example.com"
 
-            trait("withCallback") {
+            trait(CommonUserTrait.WithCallback) {
                 afterCreate { _, _ ->
                     callbackExecuted = true
                 }
             }
         }
 
-        dsl.factory<UsersRecord>().create("withCallback")
+        dsl.factory<UsersRecord>().create(CommonUserTrait.WithCallback)
 
         assertThat(callbackExecuted).isTrue()
     }
@@ -100,7 +90,7 @@ class TraitApplicatorTest : JooqTestBase() {
             USERS.NAME set "User"
             USERS.EMAIL set "user@example.com"
 
-            trait("withTransient") {
+            trait(CommonUserTrait.WithTransient) {
                 transient {
                     set("key", "value")
                 }
@@ -120,19 +110,19 @@ class TraitApplicatorTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("young") {
+            trait(CommonUserTrait.Young) {
                 USERS.AGE set 18
             }
 
-            trait("old") {
+            trait(CommonUserTrait.Old) {
                 USERS.AGE set 70
             }
         }
 
-        val user1 = dsl.factory<UsersRecord>().build("young", "old")
+        val user1 = dsl.factory<UsersRecord>().build(CommonUserTrait.Young, CommonUserTrait.Old)
         assertThat(user1.age).isEqualTo(70)
 
-        val user2 = dsl.factory<UsersRecord>().build("old", "young")
+        val user2 = dsl.factory<UsersRecord>().build(CommonUserTrait.Old, CommonUserTrait.Young)
         assertThat(user2.age).isEqualTo(18)
     }
 }

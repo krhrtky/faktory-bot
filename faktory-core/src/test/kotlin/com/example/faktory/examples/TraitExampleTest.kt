@@ -1,4 +1,5 @@
 package com.example.faktory.examples
+import com.example.faktory.test.CommonUserTrait
 
 import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
@@ -24,14 +25,14 @@ class TraitExampleTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("admin") {
+            trait(CommonUserTrait.Admin) {
                 USERS.NAME set "Admin User"
                 USERS.AGE set 35
             }
         }
 
         val regularUser = dsl.factory<UsersRecord>().build()
-        val adminUser = dsl.factory<UsersRecord>().build("admin")
+        val adminUser = dsl.factory<UsersRecord>().build(CommonUserTrait.Admin)
 
         assertThat(regularUser.name).isEqualTo("Regular User")
         assertThat(regularUser.age).isEqualTo(25)
@@ -48,16 +49,16 @@ class TraitExampleTest : JooqTestBase() {
             USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
-            trait("verified") {
+            trait(CommonUserTrait.Verified) {
                 USERS.EMAIL set "verified@example.com"
             }
 
-            trait("senior") {
+            trait(CommonUserTrait.Senior) {
                 USERS.AGE set 60
             }
         }
 
-        val user = dsl.factory<UsersRecord>().build("verified", "senior")
+        val user = dsl.factory<UsersRecord>().build(CommonUserTrait.Verified, CommonUserTrait.Senior)
 
         assertThat(user.name).isEqualTo("User")
         assertThat(user.email).isEqualTo("verified@example.com")
@@ -71,19 +72,19 @@ class TraitExampleTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("young") {
+            trait(CommonUserTrait.Young) {
                 USERS.AGE set 18
             }
 
-            trait("old") {
+            trait(CommonUserTrait.Old) {
                 USERS.AGE set 70
             }
         }
 
-        val user1 = dsl.factory<UsersRecord>().build("young", "old")
+        val user1 = dsl.factory<UsersRecord>().build(CommonUserTrait.Young, CommonUserTrait.Old)
         assertThat(user1.age).isEqualTo(70)
 
-        val user2 = dsl.factory<UsersRecord>().build("old", "young")
+        val user2 = dsl.factory<UsersRecord>().build(CommonUserTrait.Old, CommonUserTrait.Young)
         assertThat(user2.age).isEqualTo(18)
     }
 
@@ -96,14 +97,14 @@ class TraitExampleTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("withCallback") {
+            trait(CommonUserTrait.WithCallback) {
                 afterCreate { _, _ ->
                     callbackExecuted = true
                 }
             }
         }
 
-        dsl.factory<UsersRecord>().create("withCallback")
+        dsl.factory<UsersRecord>().create(CommonUserTrait.WithCallback)
 
         assertThat(callbackExecuted).isTrue()
     }
@@ -115,12 +116,12 @@ class TraitExampleTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("senior") {
+            trait(CommonUserTrait.Senior) {
                 USERS.AGE set 60
             }
         }
 
-        val user = dsl.factory<UsersRecord>().build("senior")
+        val user = dsl.factory<UsersRecord>().build(CommonUserTrait.Senior)
 
         assertThat(user.age).isEqualTo(60)
     }
@@ -132,18 +133,18 @@ class TraitExampleTest : JooqTestBase() {
             USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
-            trait("verified") {
+            trait(CommonUserTrait.Verified) {
                 USERS.NAME set "Verified User"
             }
 
-            trait("premium") {
+            trait(CommonUserTrait.Premium) {
                 USERS.NAME set "Premium User"
             }
         }
 
         val regular = dsl.factory<UsersRecord>().build()
-        val verified = dsl.factory<UsersRecord>().build("verified")
-        val premium = dsl.factory<UsersRecord>().build("premium")
+        val verified = dsl.factory<UsersRecord>().build(CommonUserTrait.Verified)
+        val premium = dsl.factory<UsersRecord>().build(CommonUserTrait.Premium)
 
         assertThat(regular.name).isEqualTo("User")
         assertThat(verified.name).isEqualTo("Verified User")
@@ -157,12 +158,12 @@ class TraitExampleTest : JooqTestBase() {
             USERS.EMAIL set "user@example.com"
             USERS.AGE set 25
 
-            trait("admin") {
+            trait(CommonUserTrait.Admin) {
                 USERS.NAME set "Admin User"
             }
         }
 
-        val admin = dsl.factory<UsersRecord>().create("admin")
+        val admin = dsl.factory<UsersRecord>().create(CommonUserTrait.Admin)
 
         assertThat(admin.id).isNotNull()
         assertThat(admin.name).isEqualTo("Admin User")
@@ -181,20 +182,20 @@ class TraitExampleTest : JooqTestBase() {
                 executionOrder.add("base")
             }
 
-            trait("t1") {
+            trait(CommonUserTrait.T1) {
                 afterCreate { _, _ ->
                     executionOrder.add("t1")
                 }
             }
 
-            trait("t2") {
+            trait(CommonUserTrait.T2) {
                 afterCreate { _, _ ->
                     executionOrder.add("t2")
                 }
             }
         }
 
-        dsl.factory<UsersRecord>().create("t1", "t2")
+        dsl.factory<UsersRecord>().create(CommonUserTrait.T1, CommonUserTrait.T2)
 
         assertThat(executionOrder).containsExactly("base", "t1", "t2")
     }

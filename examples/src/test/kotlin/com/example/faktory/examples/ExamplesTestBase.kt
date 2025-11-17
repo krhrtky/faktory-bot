@@ -18,7 +18,7 @@ abstract class ExamplesTestBase {
         @Container
         val mysql: MySQLContainer<*> =
             MySQLContainer("mysql:8.0")
-                .withDatabaseName("faktory_examples")
+                .withDatabaseName("faktory_test")
                 .withUsername("test")
                 .withPassword("test")
                 .withReuse(true)
@@ -48,6 +48,9 @@ abstract class ExamplesTestBase {
 
     @AfterEach
     fun cleanupDatabase() {
-        // Cleanup is automatic via Testcontainers
+        dsl.execute("SET FOREIGN_KEY_CHECKS = 0")
+        dsl.truncate(com.example.faktory.examples.jooq.tables.Posts.POSTS).execute()
+        dsl.truncate(com.example.faktory.examples.jooq.tables.Users.USERS).execute()
+        dsl.execute("SET FOREIGN_KEY_CHECKS = 1")
     }
 }

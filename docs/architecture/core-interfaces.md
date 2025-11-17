@@ -3,14 +3,15 @@
 ## 関連ドキュメント
 - [System Design](./system-design.md) - アーキテクチャ全体像
 - [jOOQ Integration](./jooq-integration.md) - jOOQ固有の実装
-- [Phase 2: Core](../implementation/phase2-core.md) - コア機能実装タスク
+- [Compile-time Validation](./compile-time-validation.md) - コンパイル時検証の選択肢
 
 ## インターフェース設計方針
 
-1. **型安全性**: Kotlin のジェネリクスを最大限活用
-2. **DSL指向**: 自然な記述を可能にするAPI設計
-3. **拡張性**: sealed interface で拡張ポイントを明確化
-4. **イミュータビリティ**: データクラスは不変
+1. **DSL指向**: jOOQ TableField を使った型安全で自然な記述
+2. **実行時検証**: NOT NULL制約の実行時チェックと明確なエラーメッセージ
+3. **jOOQ連携**: メタデータから型情報を自動抽出
+4. **拡張性**: sealed interface で拡張ポイントを明確化
+5. **イミュータビリティ**: データクラスは不変
 
 ## 1. FactoryDefinition
 
@@ -43,6 +44,7 @@ interface FactoryDefinition<T : Record> {
 ### 実装例
 
 ```kotlin
+@InternalFactoryApi
 data class DefaultFactoryDefinition<T : Record>(
     override val recordClass: KClass<T>,
     override val name: String? = null,
@@ -51,425 +53,149 @@ data class DefaultFactoryDefinition<T : Record>(
     override val traits: Map<String, TraitDefinition<T>> = emptyMap(),
     override val callbacks: CallbackRegistry<T> = DefaultCallbackRegistry(),
     override val transients: TransientDefinition = TransientDefinition()
-) : FactoryDefinition<T> {
-    override fun withParent(parent: FactoryDefinition<T>) = copy(parent = parent)
-    override fun withAttribute(name: String, definition: AttributeDefinition<*>) =
-        copy(attributes = attributes + (name to definition))
-    override fun withTrait(name: String, trait: TraitDefinition<T>) =
-        copy(traits = traits + (name to trait))
-}
+) : FactoryDefinition<T>
 ```
 
 ## 2. AttributeDefinition
 
 ### 責務
-属性の定義（静的値、動的値、シーケンス、アソシエーション）
+属性値の評価戦略を定義する
 
-### sealed interface構造
+### Sealed Interface
 
 ```kotlin
 sealed interface AttributeDefinition<T> {
     fun evaluate(context: EvaluationContext): T
 }
 
-data class StaticAttribute<T>(
-    val value: T
-) : AttributeDefinition<T> {
-    override fun evaluate(context: EvaluationContext) = value
-}
-
-data class DynamicAttribute<T>(
-    val generator: (EvaluationContext) -> T
-) : AttributeDefinition<T> {
-    override fun evaluate(context: EvaluationContext) = generator(context)
-}
-
-data class SequenceAttribute<T>(
-    val name: String?,
-    val generator: (Int) -> T
-) : AttributeDefinition<T> {
-    override fun evaluate(context: EvaluationContext): T {
-        val sequenceManager = context.sequenceManager
-        val sequenceName = name ?: context.attributeName
-        return sequenceManager.next(sequenceName, generator)
-    }
-}
-
+data class StaticAttribute<T>(val value: T) : AttributeDefinition<T>
+data class DynamicAttribute<T>(val generator: (EvaluationContext) -> T) : AttributeDefinition<T>
+data class SequenceAttribute<T>(val name: String?, val generator: (Int) -> T) : AttributeDefinition<T>
 data class AssociationAttribute<T : Record>(
     val targetClass: KClass<T>,
-    val factoryName: String? = null,
-    val overrides: Map<String, Any?> = emptyMap()
-) : AttributeDefinition<T> {
-    override fun evaluate(context: EvaluationContext): T {
-        return context.associationResolver.resolve(this, context)
+    val factoryName: String?,
+    val overrides: Map<String, Any?>
+) : AttributeDefinition<T>
+```
+
+## 3. Factory DSL
+
+### Type-Safe DSL with jOOQ TableField
+
+```kotlin
+factory<UsersRecord> {
+    USERS.NAME set "User"
+    USERS.EMAIL set sequence { n -> "user$n@example.com" }
+    USERS.AGE set 25
+
+    trait("admin") {
+        USERS.NAME set "Admin User"
+    }
+
+    afterCreate { user, _ ->
+        println("Created user: ${user.id}")
     }
 }
 ```
 
-## 3. EvaluationContext
-
-### 責務
-属性評価時のコンテキスト情報を提供
-
-### インターフェース
-
-```kotlin
-data class EvaluationContext(
-    val sequenceManager: SequenceManager,
-    val associationResolver: AssociationResolver,
-    val transients: TransientContext,
-    val attributeName: String,
-    val depth: Int = 0
-) {
-    fun withDepth(newDepth: Int) = copy(depth = newDepth)
-    fun withAttributeName(name: String) = copy(attributeName = name)
-}
-```
-
-## 4. FactoryRegistry
-
-### 責務
-ファクトリの登録・検索・解決
-
-### インターフェース
-
-```kotlin
-interface FactoryRegistry {
-    fun <T : Record> register(definition: FactoryDefinition<T>)
-    fun <T : Record> register(name: String, definition: FactoryDefinition<T>)
-
-    fun <T : Record> find(recordClass: KClass<T>): FactoryDefinition<T>
-    fun <T : Record> find(recordClass: KClass<T>, name: String): FactoryDefinition<T>
-
-    fun <T : Record> resolve(definition: FactoryDefinition<T>): ResolvedFactory<T>
-
-    fun clear()
-}
-```
-
-### ResolvedFactory
-
-```kotlin
-data class ResolvedFactory<T : Record>(
-    val definition: FactoryDefinition<T>,
-    val mergedAttributes: Map<String, AttributeDefinition<*>>,
-    val mergedCallbacks: CallbackRegistry<T>,
-    val mergedTransients: TransientDefinition
-)
-```
-
-## 5. FactoryBuilder
-
-### 責務
-レコードの生成・永続化
-
-### インターフェース
-
-```kotlin
-interface FactoryBuilder<T : Record> {
-    fun build(overrides: Map<String, Any?> = emptyMap()): T
-    fun build(vararg traits: String, overrides: Map<String, Any?> = emptyMap()): T
-
-    fun create(overrides: Map<String, Any?> = emptyMap()): T
-    fun create(vararg traits: String, overrides: Map<String, Any?> = emptyMap()): T
-
-    fun buildList(count: Int, overrides: Map<String, Any?> = emptyMap()): List<T>
-    fun createList(count: Int, overrides: Map<String, Any?> = emptyMap()): List<T>
-
-    fun attributes(overrides: Map<String, Any?> = emptyMap()): Map<String, Any?>
-}
-```
-
-### BuildStrategy
-
-```kotlin
-interface BuildStrategy {
-    fun <T : Record> build(
-        recordClass: KClass<T>,
-        attributes: Map<String, Any?>
-    ): T
-
-    fun <T : Record> create(
-        recordClass: KClass<T>,
-        attributes: Map<String, Any?>,
-        dsl: DSLContext
-    ): T
-}
-```
-
-## 6. SequenceManager
-
-### 責務
-シーケンス値の管理
-
-### インターフェース
-
-```kotlin
-interface SequenceManager {
-    fun <T> next(name: String, generator: (Int) -> T): T
-    fun current(name: String): Int
-    fun reset(name: String)
-    fun resetAll()
-}
-```
-
-### 実装例
-
-```kotlin
-class DefaultSequenceManager : SequenceManager {
-    private val sequences = ConcurrentHashMap<String, AtomicInteger>()
-
-    override fun <T> next(name: String, generator: (Int) -> T): T {
-        val counter = sequences.computeIfAbsent(name) { AtomicInteger(0) }
-        val value = counter.incrementAndGet()
-        return generator(value)
-    }
-
-    override fun current(name: String): Int =
-        sequences[name]?.get() ?: 0
-
-    override fun reset(name: String) {
-        sequences[name]?.set(0)
-    }
-
-    override fun resetAll() {
-        sequences.clear()
-    }
-}
-```
-
-## 7. AssociationResolver
-
-### 責務
-関連レコードの解決
-
-### インターフェース
-
-```kotlin
-interface AssociationResolver {
-    fun <T : Record> resolve(
-        association: AssociationAttribute<T>,
-        context: EvaluationContext
-    ): T
-
-    fun checkCircular(recordClass: KClass<*>)
-}
-```
-
-### CircularDependencyDetector
-
-```kotlin
-class CircularDependencyDetector {
-    private val stack = ThreadLocal.withInitial { mutableListOf<KClass<*>>() }
-
-    fun <T> withCheck(recordClass: KClass<*>, block: () -> T): T {
-        val currentStack = stack.get()
-        if (recordClass in currentStack) {
-            throw CircularAssociationException(currentStack + recordClass)
-        }
-
-        currentStack.add(recordClass)
-        try {
-            return block()
-        } finally {
-            currentStack.removeLast()
-        }
-    }
-}
-```
-
-## 8. CallbackRegistry
-
-### 責務
-コールバックの登録・実行
-
-### インターフェース
-
-```kotlin
-interface CallbackRegistry<T : Record> {
-    fun afterBuild(callback: (T) -> Unit)
-    fun afterBuild(callback: (T, TransientContext) -> Unit)
-
-    fun beforeCreate(callback: (T) -> Unit)
-    fun beforeCreate(callback: (T, TransientContext) -> Unit)
-
-    fun afterCreate(callback: (T) -> Unit)
-    fun afterCreate(callback: (T, TransientContext) -> Unit)
-
-    fun execute(phase: CallbackPhase, record: T, transients: TransientContext = TransientContext())
-
-    fun merge(other: CallbackRegistry<T>): CallbackRegistry<T>
-}
-```
-
-### CallbackPhase
-
-```kotlin
-enum class CallbackPhase {
-    AFTER_BUILD,
-    BEFORE_CREATE,
-    AFTER_CREATE
-}
-```
-
-## 9. TraitDefinition
-
-### 責務
-トレイトの定義
-
-### インターフェース
-
-```kotlin
-data class TraitDefinition<T : Record>(
-    val name: String,
-    val attributes: Map<String, AttributeDefinition<*>> = emptyMap(),
-    val callbacks: CallbackRegistry<T> = DefaultCallbackRegistry()
-) {
-    fun applyTo(definition: FactoryDefinition<T>): FactoryDefinition<T> {
-        return definition.copy(
-            attributes = definition.attributes + attributes,
-            callbacks = definition.callbacks.merge(callbacks)
-        )
-    }
-}
-```
-
-## 10. TransientDefinition
-
-### 責務
-Transient属性の定義
-
-### インターフェース
-
-```kotlin
-data class TransientDefinition(
-    val properties: Map<String, Any?> = emptyMap()
-) {
-    fun <T> get(key: String): T? = properties[key] as? T
-    fun with(key: String, value: Any?) = copy(properties = properties + (key to value))
-}
-
-data class TransientContext(
-    private val values: Map<String, Any?> = emptyMap()
-) {
-    operator fun <T> get(key: String): T? = values[key] as? T
-    fun with(key: String, value: Any?) = TransientContext(values + (key to value))
-}
-```
-
-## DSL Builder
-
-### FactoryDslBuilder
+### DSL Builder Implementation
 
 ```kotlin
 class FactoryDslBuilder<T : Record>(
     private val recordClass: KClass<T>
 ) {
-    private var name: String? = null
-    private var parent: FactoryDefinition<T>? = null
     private val attributes = mutableMapOf<String, AttributeDefinition<*>>()
     private val traits = mutableMapOf<String, TraitDefinition<T>>()
     private val callbacks = DefaultCallbackRegistry<T>()
-    private val transients = TransientDefinition()
 
-    fun attribute(name: String, value: Any?) {
+    // Type-safe TableField extension
+    infix fun <V> TableField<T, V>.set(value: V) {
         attributes[name] = StaticAttribute(value)
     }
 
-    fun <V> attribute(name: String, generator: () -> V) {
-        attributes[name] = DynamicAttribute { generator() }
-    }
-
-    fun <V> sequence(name: String? = null, generator: (Int) -> V): V {
-        // プレースホルダー: 実際の評価は後で行う
-        throw UnsupportedOperationException("Use in factory definition")
-    }
-
-    fun <A : Record> association(
-        targetClass: KClass<A>,
-        factoryName: String? = null,
-        overrides: Map<String, Any?> = emptyMap()
-    ): A {
-        // プレースホルダー
-        throw UnsupportedOperationException("Use in factory definition")
+    infix fun <V> TableField<T, V>.set(generator: (Int) -> V) {
+        attributes[name] = SequenceAttribute(name, generator)
     }
 
     fun trait(name: String, block: FactoryDslBuilder<T>.() -> Unit) {
         val traitBuilder = FactoryDslBuilder(recordClass)
         traitBuilder.block()
-        traits[name] = TraitDefinition(
-            name = name,
-            attributes = traitBuilder.attributes,
-            callbacks = traitBuilder.callbacks
-        )
+        traits[name] = TraitDefinition(name, traitBuilder.build())
     }
 
-    fun afterBuild(callback: (T) -> Unit) {
-        callbacks.afterBuild(callback)
+    fun afterBuild(callback: (T, EvaluationContext) -> Unit) {
+        callbacks.addAfterBuild(callback)
     }
 
-    fun beforeCreate(callback: (T) -> Unit) {
-        callbacks.beforeCreate(callback)
-    }
-
-    fun afterCreate(callback: (T) -> Unit) {
-        callbacks.afterCreate(callback)
+    fun afterCreate(callback: (T, EvaluationContext) -> Unit) {
+        callbacks.addAfterCreate(callback)
     }
 
     fun build(): FactoryDefinition<T> {
         return DefaultFactoryDefinition(
             recordClass = recordClass,
-            name = name,
-            parent = parent,
             attributes = attributes,
             traits = traits,
-            callbacks = callbacks,
-            transients = transients
+            callbacks = callbacks
         )
     }
 }
 ```
 
-### DSL関数
+## 4. FactoryBuilder
+
+### Build Strategies
 
 ```kotlin
-inline fun <reified T : Record> factory(
-    name: String? = null,
-    noinline block: FactoryDslBuilder<T>.() -> Unit
-): FactoryDefinition<T> {
-    val builder = FactoryDslBuilder(T::class)
-    builder.block()
-    return builder.build()
+interface FactoryBuilder<T : Record> {
+    fun build(overrides: Map<String, Any?> = emptyMap()): T
+    fun create(overrides: Map<String, Any?> = emptyMap()): T
+    fun buildList(count: Int, overrides: Map<String, Any?> = emptyMap()): List<T>
+    fun createList(count: Int, overrides: Map<String, Any?> = emptyMap()): List<T>
+    fun attributes(overrides: Map<String, Any?> = emptyMap()): Map<String, Any?>
 }
 ```
 
-## 型安全性の保証
+## 5. Required Field Validation
 
-### コンパイル時チェック
+### Runtime Validation
 
 ```kotlin
-// OK: 型安全
-factory<UserRecord> {
-    name = "John"  // String
-    age = 30       // Int
-}
+class RequiredAttributeValidator {
+    fun <T : Record> validateRequiredAttributes(
+        record: T,
+        table: Table<T>
+    ) {
+        val missingFields = table.fields()
+            .filter { field ->
+                !field.dataType.nullable() &&
+                field.getValue(record) == null &&
+                !hasDefaultValue(field)
+            }
+            .map { it.name }
 
-// NG: コンパイルエラー
-factory<UserRecord> {
-    name = 123     // Type mismatch
+        if (missingFields.isNotEmpty()) {
+            throw MissingRequiredAttributesException(
+                "Missing required attributes for table '${table.name}': ${missingFields.joinToString()}"
+            )
+        }
+    }
 }
 ```
 
-### 実行時バリデーション
+## 6. CallbackRegistry
+
+### Lifecycle Hooks
 
 ```kotlin
-interface AttributeValidator<T> {
-    fun validate(value: T): ValidationResult
-}
+interface CallbackRegistry<T : Record> {
+    fun addAfterBuild(callback: (T, EvaluationContext) -> Unit)
+    fun addBeforeCreate(callback: (T, EvaluationContext) -> Unit)
+    fun addAfterCreate(callback: (T, EvaluationContext) -> Unit)
 
-sealed class ValidationResult {
-    object Valid : ValidationResult()
-    data class Invalid(val errors: List<String>) : ValidationResult()
+    fun executeAfterBuild(record: T, context: EvaluationContext)
+    fun executeBeforeCreate(record: T, context: EvaluationContext)
+    fun executeAfterCreate(record: T, context: EvaluationContext)
 }
 ```
 
@@ -477,8 +203,41 @@ sealed class ValidationResult {
 
 これらのインターフェースにより以下を実現:
 
-1. **型安全性**: コンパイル時の型チェック
-2. **拡張性**: sealed interface による拡張ポイント
-3. **テスタビリティ**: インターフェース駆動設計
-4. **保守性**: 単一責任の原則
-5. **パフォーマンス**: 遅延評価とイミュータビリティ
+1. **DSL指向**: jOOQ TableField による型安全なDSL
+2. **実行時検証**: NOT NULL制約の明確なエラーメッセージ
+3. **拡張性**: sealed interface による拡張ポイント
+4. **テスタビリティ**: インターフェース駆動設計
+5. **保守性**: 単一責任の原則
+6. **柔軟性**: trait、callback、sequence による強力な機能
+
+### アーキテクチャ階層
+
+```
+┌──────────────────────────────────────┐
+│  Factory DSL Layer (User-facing)     │
+│  - factory<T> { }                    │
+│  - USERS.NAME set "value"            │
+└──────────────┬───────────────────────┘
+               │
+┌──────────────▼───────────────────────┐
+│  Factory Registry & Builder          │
+│  - GlobalFactoryRegistry             │
+│  - DefaultFactoryBuilder             │
+└──────────────┬───────────────────────┘
+               │
+┌──────────────▼───────────────────────┐
+│  Core Interfaces                     │
+│  - FactoryDefinition                 │
+│  - AttributeDefinition               │
+│  - CallbackRegistry                  │
+└──────────────┬───────────────────────┘
+               │
+┌──────────────▼───────────────────────┐
+│  jOOQ Integration                    │
+│  - JooqTableResolver                 │
+│  - RequiredAttributeValidator        │
+│  - DSLContext operations             │
+└──────────────────────────────────────┘
+```
+
+次のステップ: 各インターフェースの詳細な実装とテストケース作成

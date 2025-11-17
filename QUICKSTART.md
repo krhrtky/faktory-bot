@@ -143,18 +143,29 @@ val users = buildList<UsersRecord>(10) {
 
 ```kotlin
 import com.example.faktory.dsl.factory
+import com.example.faktory.examples.jooq.tables.Posts.Companion.POSTS
 import com.example.faktory.examples.jooq.tables.records.PostsRecord
+import com.example.faktory.examples.jooq.tables.records.UsersRecord
 
+// Userファクトリ定義（依存先）
+factory<UsersRecord> {
+    USERS.NAME set "User"
+    USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+    USERS.AGE set 25
+}
+
+// Postファクトリ定義（依存元）
 factory<PostsRecord> {
-    userId = association<UsersRecord>()  // 自動的にUserを生成
-    title = sequence { n -> "Post #$n" }
-    content = "Default content"
-    published = false
+    POSTS.USER_ID set association<UsersRecord>()  // 型レベルで依存関係を明示
+    POSTS.TITLE set sequence { n -> "Post #$n" }
+    POSTS.CONTENT set "Default content"
+    POSTS.PUBLISHED set false
 }
 
 // 関連レコードの自動生成
-val post = create<PostsRecord>(dsl)
-// → Userも自動的に作成され、post.userIdに設定される
+val post = dsl.factory<PostsRecord>().create()
+// → UsersRecordが自動的に作成され、post.userIdに設定される
+// → 型安全: UsersRecord以外を指定するとコンパイルエラー
 ```
 
 ### トランザクション管理

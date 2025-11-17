@@ -2,6 +2,7 @@ package com.example.faktory.dsl
 
 import com.example.faktory.builder.DefaultFactoryBuilder
 import com.example.faktory.builder.FactoryBuilder
+import com.example.faktory.core.AssociationAttribute
 import com.example.faktory.core.AttributeDefinition
 import com.example.faktory.core.CallbackPhase
 import com.example.faktory.core.DefaultCallbackRegistry
@@ -44,8 +45,25 @@ class FactoryDslBuilder<T : Record>(
         attributes[this.name] = value
     }
 
+    infix fun <R : Record, V> TableField<R, V>.set(value: AssociationAttribute<*>) {
+        attributes[this.name] = value
+    }
+
     fun <V> sequence(generator: (Int) -> V): SequenceAttribute<V> {
         return SequenceAttribute(null, generator)
+    }
+
+    inline fun <reified A : Record> association(
+        factoryName: String? = null,
+        traits: List<String> = emptyList(),
+        overrides: Map<String, Any?> = emptyMap(),
+    ): AssociationAttribute<A> {
+        return AssociationAttribute(
+            targetClass = A::class,
+            factoryName = factoryName,
+            traits = traits,
+            overrides = overrides,
+        )
     }
 
     fun transient(block: TransientDslBuilder.() -> Unit) {

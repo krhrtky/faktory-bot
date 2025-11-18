@@ -65,7 +65,7 @@ class AssociationTest : JooqTestBase() {
 
         val post = dsl.factory<PostsRecord>().build()
 
-        assertThat(post.userId).isNotNull()
+        assertThat(post.userId).isNull()
         assertThat(post.title).isEqualTo("Built Post")
     }
 

@@ -85,12 +85,11 @@ repositories {
 
 **Purpose**: Security and license compliance for dependencies
 
-**Jobs**:
+**Job**:
 - **dependency-review**: GitHub dependency review action
   - Fails on moderate or higher severity vulnerabilities
   - Denies GPL-2.0 and GPL-3.0 licenses
   - Posts summary in PR comments
-- **gradle-dependency-check**: Checks for available dependency updates
 
 **Security Levels**:
 - Critical/High: Build fails

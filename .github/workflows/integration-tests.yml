@@ -20,7 +20,7 @@ jobs:
             db-image: mysql:8.0
             db-port: 3306
             db-env: |
-              MYSQL_DATABASE=testdb
+              MYSQL_DATABASE=faktory_test
               MYSQL_USER=test
               MYSQL_PASSWORD=test
               MYSQL_ROOT_PASSWORD=root
@@ -62,7 +62,7 @@ jobs:
         DB_TYPE: ${{ matrix.database }}
         DB_HOST: localhost
         DB_PORT: ${{ matrix.db-port }}
-        DB_NAME: testdb
+        DB_NAME: faktory_test
         DB_USER: test
         DB_PASSWORD: test
 

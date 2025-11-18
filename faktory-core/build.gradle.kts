@@ -162,9 +162,9 @@ sourceSets {
 
 // Ensure jOOQ code is generated before compilation
 tasks.named("compileKotlin") {
-    dependsOn("generateJooq")
+    dependsOn("generateMainJooq")
 }
 
 tasks.named("compileTestKotlin") {
-    dependsOn("generateJooq")
+    dependsOn("generateMainJooq")
 }

@@ -14,17 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        database: [postgresql, mysql]
+        database: [mysql]
         include:
-          - database: postgresql
-            db-image: postgres:16
-            db-port: 5432
-            db-env: |
-              POSTGRES_DB=testdb
-              POSTGRES_USER=test
-              POSTGRES_PASSWORD=test
-            health-cmd: pg_isready
-
           - database: mysql
             db-image: mysql:8.0
             db-port: 3306

@@ -28,16 +28,19 @@ This document describes the CI/CD workflows for the Faktory Bot project located 
 
 **Purpose**: Run integration tests against multiple database engines
 
-**Strategy**: Matrix testing with PostgreSQL and MySQL
+**Strategy**: Currently tests MySQL database only
 
 **Jobs**:
-- **integration-tests**: Runs integration tests for each database type in parallel
-- **integration-summary**: Aggregates results from all database tests
+- **integration-tests**: Runs integration tests with MySQL Testcontainers
+- **integration-summary**: Aggregates results from database tests
 
-**Note**: H2 database tests are included in the main CI unit tests (not integration tests) since H2 runs in-process and doesn't require Testcontainers.
+**Note**:
+- Current implementation (`JooqTestBase`) supports MySQL via Testcontainers
+- PostgreSQL and H2 support is planned for future implementation
+- H2 tests may run as part of unit tests since it's in-process
 
 **Environment Variables**:
-- `DB_TYPE`: Database type (postgresql, mysql)
+- `DB_TYPE`: Database type (currently mysql only)
 - `DB_HOST`: Database host (localhost for CI)
 - `DB_PORT`: Database port
 - `DB_NAME`: Database name (testdb)
@@ -142,7 +145,7 @@ CI Workflow
 └── quality-gate (depends on all)
 
 Integration Tests
-├── integration-tests (matrix: postgresql, mysql)
+├── integration-tests (mysql only)
 └── integration-summary (depends on integration-tests)
 
 Release Workflow
@@ -204,8 +207,8 @@ All PRs must pass:
 - ✅ ktlint code formatting
 - ✅ detekt static analysis
 - ✅ 90%+ test coverage
-- ✅ All unit tests (including H2)
-- ✅ All integration tests (PostgreSQL, MySQL)
+- ✅ All unit tests
+- ✅ All integration tests (MySQL)
 - ✅ No moderate+ severity vulnerabilities
 - ✅ No GPL license dependencies
 

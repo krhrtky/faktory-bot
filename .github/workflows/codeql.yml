@@ -49,7 +49,7 @@ jobs:
     - name: Build project
       run: ./gradlew clean build -x test
       env:
-        GRADLE_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
+        GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=1g
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

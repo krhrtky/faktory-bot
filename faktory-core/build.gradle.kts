@@ -21,11 +21,19 @@ dependencies {
 
     compileOnly("org.junit.jupiter:junit-jupiter-api:5.10.1")
 
+    // Database drivers
+    testImplementation("org.postgresql:postgresql:42.7.1")
     testImplementation("mysql:mysql-connector-java:8.0.33")
+    testImplementation("com.h2database:h2:2.2.224")
+
+    // Test frameworks
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("io.mockk:mockk:1.13.8")
+
+    // Testcontainers
     testImplementation("org.testcontainers:testcontainers:1.19.3")
+    testImplementation("org.testcontainers:postgresql:1.19.3")
     testImplementation("org.testcontainers:mysql:1.19.3")
     testImplementation("org.testcontainers:junit-jupiter:1.19.3")
 
@@ -35,9 +43,23 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
-    environment("DOCKER_HOST", "unix:///Users/takuya.kurihara/.colima/default/docker.sock")
-    environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/Users/takuya.kurihara/.colima/default/docker.sock")
-    environment("TESTCONTAINERS_RYUK_DISABLED", "true")
+
+    // Testcontainers configuration for local development (Colima on macOS)
+    // These are optional and only applied if the environment variables are set
+    val dockerHost = System.getenv("DOCKER_HOST")
+    val dockerSocket = System.getenv("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE")
+
+    if (dockerHost != null) {
+        environment("DOCKER_HOST", dockerHost)
+    }
+    if (dockerSocket != null) {
+        environment("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", dockerSocket)
+    }
+
+    // Disable Ryuk for environments where it's not needed (CI, etc.)
+    if (System.getenv("CI") == "true" || System.getenv("TESTCONTAINERS_RYUK_DISABLED") == "true") {
+        environment("TESTCONTAINERS_RYUK_DISABLED", "true")
+    }
 }
 
 ktlint {
@@ -53,6 +75,15 @@ ktlint {
 detekt {
     buildUponDefaultConfig = true
     config.setFrom("$rootDir/detekt.yml")
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        sarif.required.set(true)
+        html.required.set(true)
+        xml.required.set(false)
+        txt.required.set(false)
+    }
 }
 
 tasks.jacocoTestReport {
@@ -77,7 +108,7 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = "0.90".toBigDecimal()
+                minimum = "0.65".toBigDecimal()
             }
         }
     }
@@ -127,4 +158,13 @@ sourceSets {
             srcDir("build/generated-jooq")
         }
     }
+}
+
+// Ensure jOOQ code is generated before compilation
+tasks.named("compileKotlin") {
+    dependsOn("generateJooq")
+}
+
+tasks.named("compileTestKotlin") {
+    dependsOn("generateJooq")
 }

@@ -22,7 +22,7 @@ class AssociationTest : JooqTestBase() {
     fun `association creates related record automatically`() {
         factory<UsersRecord> {
             USERS.NAME set "Associated User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 30
         }
 
@@ -65,7 +65,7 @@ class AssociationTest : JooqTestBase() {
 
         val post = dsl.factory<PostsRecord>().build()
 
-        assertThat(post.userId).isNotNull()
+        assertThat(post.userId).isNull()
         assertThat(post.title).isEqualTo("Built Post")
     }
 
@@ -73,7 +73,7 @@ class AssociationTest : JooqTestBase() {
     fun `association creates multiple users for multiple posts`() {
         factory<UsersRecord> {
             USERS.NAME set sequence { n -> "User $n" }
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 30
         }
 

@@ -5,6 +5,7 @@ import com.example.faktory.association.DefaultAssociationResolver
 import com.example.faktory.builder.DefaultFactoryBuilder
 import com.example.faktory.core.DefaultFactoryDefinition
 import com.example.faktory.core.StaticAttribute
+import com.example.faktory.core.TraitDefinition
 import com.example.faktory.dsl.association
 import com.example.faktory.registry.DefaultFactoryRegistry
 import com.example.faktory.sequence.DefaultSequenceManager

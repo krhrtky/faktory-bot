@@ -21,11 +21,19 @@ dependencies {
 
     compileOnly("org.junit.jupiter:junit-jupiter-api:5.10.1")
 
+    // Database drivers
+    testImplementation("org.postgresql:postgresql:42.7.1")
     testImplementation("mysql:mysql-connector-java:8.0.33")
+    testImplementation("com.h2database:h2:2.2.224")
+
+    // Test frameworks
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("io.mockk:mockk:1.13.8")
+
+    // Testcontainers
     testImplementation("org.testcontainers:testcontainers:1.19.3")
+    testImplementation("org.testcontainers:postgresql:1.19.3")
     testImplementation("org.testcontainers:mysql:1.19.3")
     testImplementation("org.testcontainers:junit-jupiter:1.19.3")
 
@@ -67,6 +75,15 @@ ktlint {
 detekt {
     buildUponDefaultConfig = true
     config.setFrom("$rootDir/detekt.yml")
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        sarif.required.set(true)
+        html.required.set(true)
+        xml.required.set(false)
+        txt.required.set(false)
+    }
 }
 
 tasks.jacocoTestReport {

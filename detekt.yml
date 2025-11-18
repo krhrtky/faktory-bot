@@ -44,3 +44,9 @@ style:
     active: false
   UseRequire:
     active: false
+
+output-reports:
+  active: true
+  exclude:
+    - 'TxtOutputReport'
+    - 'HtmlOutputReport'

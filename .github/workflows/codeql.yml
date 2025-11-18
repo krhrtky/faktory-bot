@@ -47,7 +47,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build project
-      run: ./gradlew clean build -x test
+      run: ./gradlew clean build -x test -Dkotlin.daemon.jvm.options="-Xmx2g"
       env:
         GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=1g
 

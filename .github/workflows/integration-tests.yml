@@ -55,7 +55,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Run integration tests - ${{ matrix.database }}
-      run: ./gradlew test --tests '*IntegrationTest' --no-daemon
+      run: ./gradlew :faktory-core:test --tests '*IntegrationTest' --no-daemon
       env:
         DB_TYPE: ${{ matrix.database }}
         DB_HOST: localhost

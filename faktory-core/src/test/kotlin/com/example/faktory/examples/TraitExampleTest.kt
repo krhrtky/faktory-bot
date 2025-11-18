@@ -1,9 +1,8 @@
 package com.example.faktory.examples
-import com.example.faktory.test.CommonUserTrait
-
 import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager
+import com.example.faktory.test.CommonUserTrait
 import com.example.faktory.test.JooqTestBase
 import com.example.faktory.test.jooq.tables.Users.Companion.USERS
 import com.example.faktory.test.jooq.tables.records.UsersRecord

@@ -8,7 +8,6 @@ import com.example.faktory.test.JooqTestBase
 import com.example.faktory.test.jooq.tables.Users.Companion.USERS
 import com.example.faktory.test.jooq.tables.records.UsersRecord
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

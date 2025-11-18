@@ -109,7 +109,9 @@ class FactoryDslBuilder<T : Record>(
     }
 
     @Deprecated(
-        message = "Use type-safe TableField syntax instead: USERS.EMAIL set sequence { n -> \"user\${n}@example.com\" }",
+        message =
+            "Use type-safe TableField syntax instead: " +
+                "USERS.EMAIL set sequence { n -> \"user\${n}@example.com\" }",
         replaceWith = ReplaceWith("/* Use TableField.set(sequence { ... }) instead */"),
         level = DeprecationLevel.WARNING,
     )

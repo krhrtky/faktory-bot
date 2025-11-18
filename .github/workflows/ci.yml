@@ -29,7 +29,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Generate jOOQ code
-      run: ./gradlew generateMainJooq
+      run: ./gradlew generateJooq
 
     - name: Run ktlint
       run: ./gradlew ktlintCheck

@@ -1,6 +1,5 @@
 package com.example.faktory.integration
 
-import com.example.faktory.core.*
 import com.example.faktory.dsl.factory
 import com.example.faktory.registry.GlobalFactoryRegistry
 import com.example.faktory.sequence.GlobalSequenceManager

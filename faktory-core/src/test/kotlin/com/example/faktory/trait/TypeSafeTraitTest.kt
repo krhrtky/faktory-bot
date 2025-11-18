@@ -59,7 +59,7 @@ class TypeSafeTraitTest : JooqTestBase() {
     fun `define multiple traits with sealed class`() {
         factory<UsersRecord> {
             USERS.NAME set "User"
-            USERS.EMAIL set sequence { n -> "user${n}@example.com" }
+            USERS.EMAIL set sequence { n -> "user$n@example.com" }
             USERS.AGE set 25
 
             trait(UserTrait.Admin) {

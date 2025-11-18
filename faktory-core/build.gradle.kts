@@ -159,3 +159,12 @@ sourceSets {
         }
     }
 }
+
+// Ensure jOOQ code is generated before compilation
+tasks.named("compileKotlin") {
+    dependsOn("generateJooq")
+}
+
+tasks.named("compileTestKotlin") {
+    dependsOn("generateJooq")
+}

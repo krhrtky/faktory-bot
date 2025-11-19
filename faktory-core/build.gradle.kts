@@ -4,6 +4,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
     id("nu.studer.jooq")
     jacoco
+    `maven-publish`
 }
 
 kotlin {
@@ -167,4 +168,62 @@ tasks.named("compileKotlin") {
 
 tasks.named("compileTestKotlin") {
     dependsOn("generateJooq")
+}
+
+// Configure source and javadoc jars for publishing
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
+// Maven publishing configuration
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+            artifact(sourcesJar)
+            artifact(javadocJar)
+
+            pom {
+                name.set("Faktory Bot")
+                description.set("Type-safe test data factory library for jOOQ and Kotlin")
+                url.set("https://github.com/krhrtky/faktory-bot")
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("krhrtky")
+                        name.set("krhrtky")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:git://github.com/krhrtky/faktory-bot.git")
+                    developerConnection.set("scm:git:ssh://github.com/krhrtky/faktory-bot.git")
+                    url.set("https://github.com/krhrtky/faktory-bot")
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/krhrtky/faktory-bot")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") ?: project.findProperty("gpr.user") as String?
+                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.token") as String?
+            }
+        }
+    }
 }

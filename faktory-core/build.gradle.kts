@@ -174,6 +174,7 @@ tasks.named("compileTestKotlin") {
 val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
     from(sourceSets["main"].allSource)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 val javadocJar by tasks.registering(Jar::class) {

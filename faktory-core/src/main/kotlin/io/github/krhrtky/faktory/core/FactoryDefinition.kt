@@ -1,0 +1,41 @@
+package io.github.krhrtky.faktory.core
+
+import io.github.krhrtky.faktory.annotation.InternalFactoryApi
+import org.jooq.Record
+import kotlin.reflect.KClass
+
+interface FactoryDefinition<T : Record> {
+    val recordClass: KClass<T>
+    val name: String?
+    val parent: FactoryDefinition<T>?
+    val defaultTraits: List<String>
+    val attributes: Map<String, AttributeDefinition<*>>
+    val callbacks: CallbackRegistry<T>
+    val transients: TransientDefinition
+
+    fun withParent(parent: FactoryDefinition<T>): FactoryDefinition<T>
+
+    fun withAttribute(
+        name: String,
+        definition: AttributeDefinition<*>,
+    ): FactoryDefinition<T>
+}
+
+@InternalFactoryApi
+data class DefaultFactoryDefinition<T : Record>(
+    override val recordClass: KClass<T>,
+    override val name: String? = null,
+    override val parent: FactoryDefinition<T>? = null,
+    override val defaultTraits: List<String> = emptyList(),
+    override val attributes: Map<String, AttributeDefinition<*>> = emptyMap(),
+    val traits: Map<String, TraitDefinition<T>> = emptyMap(),
+    override val callbacks: CallbackRegistry<T> = DefaultCallbackRegistry(),
+    override val transients: TransientDefinition = TransientDefinition(),
+) : FactoryDefinition<T> {
+    override fun withParent(parent: FactoryDefinition<T>) = copy(parent = parent)
+
+    override fun withAttribute(
+        name: String,
+        definition: AttributeDefinition<*>,
+    ) = copy(attributes = attributes + (name to definition))
+}

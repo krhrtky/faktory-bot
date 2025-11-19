@@ -138,7 +138,7 @@ jooq {
                         )
                     }
                     target.apply {
-                        packageName = "com.example.faktory.test.jooq"
+                        packageName = "io.github.krhrtky.faktory.test.jooq"
                         directory = "build/generated-jooq"
                     }
                     generate.apply {
@@ -193,6 +193,9 @@ publishing {
                 name.set("Faktory Bot")
                 description.set("Type-safe test data factory library for jOOQ and Kotlin")
                 url.set("https://github.com/krhrtky/faktory-bot")
+
+                groupId = "io.github.krhrtky"
+                artifactId = "faktory-core"
 
                 licenses {
                     license {

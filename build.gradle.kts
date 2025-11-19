@@ -6,8 +6,8 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.22-1.0.17" apply false
 }
 
-group = "com.example"
-version = "0.1.0"
+group = "io.github.krhrtky"
+version = "0.2.0"
 
 allprojects {
     repositories {

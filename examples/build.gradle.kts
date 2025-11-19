@@ -63,7 +63,7 @@ jooq {
                         )
                     }
                     target.apply {
-                        packageName = "com.example.faktory.examples.jooq"
+                        packageName = "io.github.krhrtky.faktory.examples.jooq"
                         directory = "build/generated-src/jooq"
                     }
                     generate.apply {

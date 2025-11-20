@@ -148,7 +148,7 @@ Sequences must be reset between tests to ensure deterministic values.
 ### In @BeforeEach
 
 ```kotlin
-import com.example.faktory.sequence.GlobalSequenceManager
+import io.github.krhrtky.faktory.sequence.GlobalSequenceManager
 
 @BeforeEach
 fun setup() {

@@ -48,8 +48,8 @@
 ### 型安全なトレイト定義（必須）
 
 ```kotlin
-import com.example.faktory.core.Trait
-import com.example.faktory.examples.jooq.tables.records.UsersRecord
+import io.github.krhrtky.faktory.core.Trait
+import io.github.krhrtky.faktory.examples.jooq.tables.records.UsersRecord
 
 // トレイトを sealed class で定義（IDE補完とコンパイル時検証）
 // 重要: Record型をGenericsで指定する
@@ -71,8 +71,8 @@ sealed class UserRole : Trait<UsersRecord> {
 ### DSL による Factory 定義
 
 ```kotlin
-import com.example.faktory.dsl.factory
-import com.example.faktory.examples.jooq.tables.records.UsersRecord
+import io.github.krhrtky.faktory.dsl.factory
+import io.github.krhrtky.faktory.examples.jooq.tables.records.UsersRecord
 
 // ファクトリ定義
 factory<UsersRecord> {
@@ -106,8 +106,8 @@ factory<UsersRecord> {
 ### レコード生成
 
 ```kotlin
-import com.example.faktory.builder.build
-import com.example.faktory.builder.create
+import io.github.krhrtky.faktory.builder.build
+import io.github.krhrtky.faktory.builder.create
 
 // メモリ上のレコード生成
 val user = build<UsersRecord> {
@@ -142,10 +142,10 @@ val users = buildList<UsersRecord>(10) {
 ### シーケンスと関連
 
 ```kotlin
-import com.example.faktory.dsl.factory
-import com.example.faktory.examples.jooq.tables.Posts.Companion.POSTS
-import com.example.faktory.examples.jooq.tables.records.PostsRecord
-import com.example.faktory.examples.jooq.tables.records.UsersRecord
+import io.github.krhrtky.faktory.dsl.factory
+import io.github.krhrtky.faktory.examples.jooq.tables.Posts.Companion.POSTS
+import io.github.krhrtky.faktory.examples.jooq.tables.records.PostsRecord
+import io.github.krhrtky.faktory.examples.jooq.tables.records.UsersRecord
 
 // Userファクトリ定義（依存先）
 factory<UsersRecord> {
@@ -171,7 +171,7 @@ val post = dsl.factory<PostsRecord>().create()
 ### トランザクション管理
 
 ```kotlin
-import com.example.faktory.transaction.withFactoryTransaction
+import io.github.krhrtky.faktory.transaction.withFactoryTransaction
 
 withFactoryTransaction(dsl) {
     val user = create<UsersRecord>(dsl) {

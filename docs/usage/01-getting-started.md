@@ -6,7 +6,7 @@
 
 ```kotlin
 dependencies {
-    testImplementation("com.example:faktory-bot:1.0.0")
+    testImplementation("io.github.krhrtky:faktory-bot:0.2.0")
     testImplementation("org.jooq:jooq:3.18.7")
     testImplementation("org.jooq:jooq-kotlin:3.18.7")
 }
@@ -16,7 +16,7 @@ dependencies {
 
 ```groovy
 dependencies {
-    testImplementation 'com.example:faktory-bot:1.0.0'
+    testImplementation 'io.github.krhrtky:faktory-bot:0.2.0'
     testImplementation 'org.jooq:jooq:3.18.7'
     testImplementation 'org.jooq:jooq-kotlin:3.18.7'
 }
@@ -70,7 +70,7 @@ This generates Record classes like `UserRecord`, `PostRecord`, etc.
 ### 3. Define Your First Factory
 
 ```kotlin
-import com.example.faktory.dsl.factory
+import io.github.krhrtky.faktory.dsl.factory
 import com.example.jooq.tables.records.UserRecord
 
 factory<UserRecord> {
@@ -83,7 +83,7 @@ factory<UserRecord> {
 ### 4. Use the Factory in Tests
 
 ```kotlin
-import com.example.faktory.dsl.factory
+import io.github.krhrtky.faktory.dsl.factory
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
 
@@ -156,8 +156,8 @@ class MyTest {
 ### JUnit 5 + Spring Boot
 
 ```kotlin
-import com.example.faktory.registry.GlobalFactoryRegistry
-import com.example.faktory.sequence.GlobalSequenceManager
+import io.github.krhrtky.faktory.registry.GlobalFactoryRegistry
+import io.github.krhrtky.faktory.sequence.GlobalSequenceManager
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.boot.test.context.SpringBootTest
 

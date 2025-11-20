@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Faktory Bot is a type-safe test data factory library for jOOQ and Kotlin, inspired by Ruby's Factory Bot. It provides a declarative DSL for defining and generating test data with full type safety and jOOQ integration.
 
-**Status**: v0.1.0 - Core features implemented and tested.
+**Status**: v0.2.0 - Core features implemented and tested.
 
 ## Architecture
 
@@ -152,7 +152,7 @@ open build/reports/jacoco/test/html/index.html
 ./gradlew test --tests FactoryRegistryTest."register and find factory"
 
 # Test package
-./gradlew test --tests com.example.faktory.core.*
+./gradlew test --tests io.github.krhrtky.faktory.core.*
 
 # Integration tests only
 ./gradlew test --tests *IntegrationTest
@@ -173,7 +173,7 @@ open build/reports/jacoco/test/html/index.html
 ./gradlew integrationTest
 ```
 
-## Implemented Features (v0.1.0)
+## Implemented Features (v0.2.0)
 
 All core features have been implemented and tested:
 
@@ -188,39 +188,21 @@ All core features have been implemented and tested:
 - ✅ Transaction management with automatic rollback
 - ✅ Factory registry with inheritance support
 - ✅ Global trait system for cross-factory traits
-- ✅ Batch operations with optimized batch INSERT
 
 ### Project Structure
 ```
-faktory-core/src/main/kotlin/com/example/faktory/
-├── core/           # FactoryDefinition, AttributeDefinition, callbacks
+faktory-core/src/main/kotlin/io/github/krhrtky/faktory/
+├── annotation/     # @FactoryGenerate (deprecated), @FactoryGenerated
+├── core/           # FactoryDefinition, AttributeDefinition, CallbackRegistry, exceptions
 ├── dsl/            # FactoryDslBuilder, DSL functions
 ├── builder/        # FactoryBuilder implementations
 ├── registry/       # FactoryRegistry, GlobalFactoryRegistry, GlobalTraitRegistry
-├── sequence/       # SequenceManager
+├── sequence/       # SequenceManager, GlobalSequenceManager
 ├── association/    # AssociationResolver, CircularDependencyDetector
 ├── trait/          # TraitApplicator
-├── transaction/    # TransactionManager, JooqTransactionManager
+├── transaction/    # TransactionManager, JooqTransactionManager, deadlock retry
 ├── jooq/           # JooqTableResolver, RequiredAttributeValidator
 └── lint/           # FactoryLinter
-```
-
-## Module Structure
-
-Actual package organization:
-```
-com.example.faktory/
-├── core/           # FactoryDefinition, AttributeDefinition
-├── dsl/            # FactoryDslBuilder, DSL functions
-├── builder/        # FactoryBuilder implementations
-├── registry/       # FactoryRegistry, GlobalFactoryRegistry
-├── sequence/       # SequenceManager
-├── association/    # AssociationResolver, CircularDependencyDetector
-├── callback/       # CallbackRegistry
-├── trait/          # TraitDefinition, TraitApplicator
-├── transaction/    # TransactionManager
-├── jooq/           # JooqTableResolver, JooqRecordBuilder, ForeignKeyResolver
-└── batch/          # BatchBuilder
 ```
 
 ## Key Design Patterns
@@ -246,7 +228,7 @@ factory<UserRecord> {
 - `build()`: Object creation only (no DB)
 - `create()`: DB persistence with beforeCreate/afterCreate callbacks
 - `buildList(count)`: Multiple builds
-- `createList(count)`: Batch INSERT optimization (20-30x faster)
+- `createList(count)`: Multiple creates (simple loop - batch optimization planned)
 - `attributes()`: Map of evaluated attributes (for API tests)
 
 ### Thread Safety
@@ -265,9 +247,9 @@ class InvalidAttribute(name: String, reason: String) : FactoryException()
 ## Testing Strategy
 
 ### Test Organization
-- `src/test/kotlin/com/example/faktory/core/`: Unit tests
-- `src/test/kotlin/com/example/faktory/integration/`: Integration tests
-- Target coverage: 90%+
+- `src/test/kotlin/io/github/krhrtky/faktory/*`: Unit tests (by package)
+- `src/test/kotlin/io/github/krhrtky/faktory/integration/`: Integration tests
+- Target coverage: 90%+ (currently configured minimum: 65%)
 
 ### Test Patterns
 ```kotlin
@@ -357,9 +339,9 @@ Before release:
 - Uses `DSLContext.newRecord()` for record creation
 - Table/field resolution via reflection from jOOQ generated classes
 - Foreign key information from jOOQ metadata (`Table.references`)
-- Batch operations via `DSLContext.batchInsert()`
-- Transactions via `DSLContext.transactionResult()`
+- Transactions via `DSLContext.transactionResult()` with savepoint support
 - Field name mapping: camelCase (Kotlin) ↔ snake_case (DB)
+- **Batch operations**: Planned feature using `DSLContext.batchInsert()` (not yet implemented)
 
 ## Common Pitfalls to Avoid
 

@@ -9,7 +9,7 @@ Faktory Bot provides transaction management utilities for test isolation and rol
 Use `withFactoryTransaction` to automatically rollback changes:
 
 ```kotlin
-import com.example.faktory.transaction.withFactoryTransaction
+import io.github.krhrtky.faktory.transaction.withFactoryTransaction
 
 @Test
 fun `user creation in transaction`() {
@@ -52,7 +52,7 @@ fun `manual transaction control`() {
 Use `FactoryTransactionExtension` for automatic transaction management per test:
 
 ```kotlin
-import com.example.faktory.transaction.FactoryTransactionExtension
+import io.github.krhrtky.faktory.transaction.FactoryTransactionExtension
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(FactoryTransactionExtension::class)
@@ -190,7 +190,7 @@ fun `read committed isolation`() {
 ### Automatic Retry
 
 ```kotlin
-import com.example.faktory.transaction.DeadlockRetryTransactionManager
+import io.github.krhrtky.faktory.transaction.DeadlockRetryTransactionManager
 
 val txManager = DeadlockRetryTransactionManager(
     dsl = dsl,

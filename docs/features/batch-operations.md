@@ -1,5 +1,11 @@
 # Batch Operations
 
+> **⚠️ PLANNED FEATURE - NOT YET IMPLEMENTED**
+>
+> このドキュメントは将来実装予定の機能の設計仕様です。
+> 現在の`createList()`実装は単純なループ処理(`(1..count).map { create(overrides) }`)であり、
+> バッチINSERTによる最適化は**未実装**です。
+
 ## 概要
 
 Batch Operationsは、大量のテストデータを効率的に生成する機能。個別INSERT の代わりにバッチINSERTを使用してパフォーマンスを向上。

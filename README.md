@@ -5,7 +5,7 @@
 ## Features
 
 - 🔒 **Type-safe**: Full compile-time type checking with jOOQ TableField syntax
-- 🚀 **Fast**: Batch insert optimization with `createList()`
+- 🚀 **Fast**: Efficient bulk data generation with `createList()`
 - 🧩 **Flexible**: Traits, callbacks, global traits, and trait composition
 - 🔄 **Test isolation**: Automatic transaction rollback support
 - 📝 **Declarative DSL**: Clean and readable factory definitions
@@ -17,7 +17,7 @@
 
 ```kotlin
 dependencies {
-    testImplementation("com.example:faktory-bot:0.1.0")
+    testImplementation("io.github.krhrtky:faktory-bot:0.2.0")
 }
 ```
 
@@ -25,7 +25,7 @@ dependencies {
 
 ```groovy
 dependencies {
-    testImplementation 'com.example:faktory-bot:0.1.0'
+    testImplementation 'io.github.krhrtky:faktory-bot:0.2.0'
 }
 ```
 
@@ -34,7 +34,7 @@ dependencies {
 ### 1. Define a Factory (Type-safe with jOOQ TableField)
 
 ```kotlin
-import com.example.faktory.dsl.factory
+import io.github.krhrtky.faktory.dsl.factory
 import com.example.jooq.tables.Users.Companion.USERS
 
 factory<UsersRecord> {
@@ -184,7 +184,7 @@ factory<UsersRecord> {
 Automatic rollback for test isolation:
 
 ```kotlin
-import com.example.faktory.transaction.withFactoryTransaction
+import io.github.krhrtky.faktory.transaction.withFactoryTransaction
 
 @Test
 fun `test with automatic rollback`() = withFactoryTransaction {
@@ -242,7 +242,7 @@ val user = dsl.factory<UsersRecord>().create(
 ### JUnit 5 Integration
 
 ```kotlin
-import com.example.faktory.transaction.FactoryTransactionExtension
+import io.github.krhrtky.faktory.transaction.FactoryTransactionExtension
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(FactoryTransactionExtension::class)

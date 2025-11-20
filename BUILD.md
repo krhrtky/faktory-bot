@@ -108,8 +108,8 @@ This will generate jOOQ Record classes from `examples/src/main/resources/schema.
 Define factories using the DSL:
 
 ```kotlin
-import com.example.faktory.dsl.factory
-import com.example.faktory.examples.jooq.tables.records.UsersRecord
+import io.github.krhrtky.faktory.dsl.factory
+import io.github.krhrtky.faktory.examples.jooq.tables.records.UsersRecord
 
 // Define factory
 factory<UsersRecord> {
@@ -130,8 +130,8 @@ factory<UsersRecord> {
 Use the factory to build or create records:
 
 ```kotlin
-import com.example.faktory.builder.build
-import com.example.faktory.builder.create
+import io.github.krhrtky.faktory.builder.build
+import io.github.krhrtky.faktory.builder.create
 
 // Build (in-memory)
 val user1 = build<UsersRecord> {

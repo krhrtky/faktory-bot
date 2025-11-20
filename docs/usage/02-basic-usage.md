@@ -9,7 +9,7 @@ Faktory Bot provides five main methods for working with factories:
 | `build()` | Single record | No | Unit tests, in-memory validation |
 | `create()` | Single record | Yes | Integration tests, DB-dependent logic |
 | `buildList(n)` | List of records | No | Bulk in-memory data |
-| `createList(n)` | List of records | Yes | Bulk DB insert (optimized) |
+| `createList(n)` | List of records | Yes | Bulk DB insert (simple loop) |
 | `attributes()` | Map<String, Any?> | No | API request payloads |
 
 ## build() - In-Memory Record
@@ -137,7 +137,7 @@ assertThat(users.all { it.age == 30 }).isTrue()
 
 ## createList() - Multiple Persisted Records
 
-Creates and persists multiple records using optimized batch insert.
+Creates and persists multiple records (currently uses individual INSERTs, batch optimization planned).
 
 ### Basic Example
 
@@ -161,15 +161,16 @@ val count = dsl.selectCount()
 assertThat(count).isEqualTo(10)
 ```
 
-### Performance Benefits
+### Current Implementation
 
 ```kotlin
-// Slow: 10 individual INSERTs
+// 現在の実装: 両方とも個別INSERT
 repeat(10) {
     dsl.factory<UserRecord>().create()
 }
 
-// Fast: 1 batch INSERT (20-30x faster)
+// createList()も内部ではループ処理
+// (将来的にバッチINSERTで最適化予定)
 dsl.factory<UserRecord>().createList(10)
 ```
 
@@ -416,4 +417,4 @@ fun `user has posts`() {
 - Learn about [Sequences](03-sequences.md) for unique values
 - See [Traits](04-traits.md) for attribute variations
 - Check [Callbacks](05-callbacks.md) for lifecycle hooks
-- Review [examples/BasicExample.kt](../../examples/src/main/kotlin/com/example/faktory/examples/BasicExample.kt)
+- Review [examples/BasicExample.kt](../../examples/src/test/kotlin/io/github/krhrtky/faktory/examples/BasicExampleTest.kt)
